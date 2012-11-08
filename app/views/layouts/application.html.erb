@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+    <title>
+<%= yield :page_title %>
+    </title>
+    
+    <link rel="stylesheet" href="/stylesheets/stylesheet.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/stylesheets/print.css" type="text/css" media="print" />
+    <link rel="stylesheet" href="/stylesheets/handheld.css" type="text/css" media="handheld" />
+    <link rel="stylesheet" href="/stylesheets/safari.css" type="text/css" media="screen and min-device-pixel-ratio: 0" />
+    <!--[if IE 6]>
+    <%= stylesheet_link_tag 'msie6' %>
+    <![endif]-->
+    <!--[if IE 7]>
+    <%= stylesheet_link_tag 'msie7' %>
+    <![endif]-->
+    <!--[if IE 8]>
+    <%= stylesheet_link_tag 'msie8' %>
+    <![endif]-->
+
+    <%= yield :head %>
+
+    </head>
+    <body>
+        <div>Your Jooxe is flowing Jimmy!</div>
+
+<%= yield :layout %>
+
+    </body>
+</html>
+
