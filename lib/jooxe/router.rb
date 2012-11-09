@@ -31,14 +31,15 @@ module Jooxe
       @database = $dbs[@database_name] || $dbs['default'] || {}
     
       #puts "after consume database paths == " + path_elements.inspect
-      @params = Hash.new(:database => @database,
+      @route_info = Hash.new(:database => @database,
         :database_name => @database_name)
       
       while path_elements.length > 0
         class_name = id = action = nil
         #puts "before consume_class paths == " + path_elements.inspect
-        @params[:class_name] = consume_class(path_elements)
-        @params[:controller_class] = @controller_class
+        @route_info[:class_name] = consume_class(path_elements)
+        @route_info[:controller_class] = @controller_class
+        @route_info[:model_class] = @model_class
 
         #puts "after consume_class class:#{@class_name} id:#{@id} action:#{@action} "  + path_elements.inspect
         id = consume_id(path_elements)
@@ -51,17 +52,15 @@ module Jooxe
           action = 'index'
         end
       
-        @params.update({ :id => id, :action => action })
+        @route_info.update!({ :id => id, :action => action })
         
-        puts "after consume_action class:#{@params[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
+        puts "after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
       
-        @params[@params[:class_name].to_s+'_id'] = id unless @params[:class_name].nil? or id.nil?
-        
-        puts "params == " + @params.inspect
+        @route_info[@route_info[:class_name].to_s+'_id'] = id unless @route_info[:class_name].nil? or id.nil?
       
       end
     
-      @params
+      @route_info
     
     end
 
@@ -86,7 +85,7 @@ module Jooxe
         puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:params => @params),class_name)
+          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:route_info => @route_info),class_name)
         end
       end
       if @controller_class.class.nil?
@@ -102,12 +101,12 @@ module Jooxe
         puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:params => @params),class_name)
+          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:route_info => @route_info),class_name)
         end
       end
       
-      @controller_class.env=@env.merge(:params => @params)
-      @model_class.env = @env.merge(:params => @params)
+      @controller_class.env=@env.merge(:route_info => @route_info)
+      @model_class.env = @env.merge(:route_info => @route_info)
       
       return paths.shift
       

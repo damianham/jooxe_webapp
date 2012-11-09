@@ -67,18 +67,15 @@ class JooxeApplication
 #      return [404,{"Content-Type" => "text/html"}, Rack::Response.new("class not found")]
 #    end
 #    
-    env[:params] = options[:params]
+    env[:route_info] = options
     
-    view = Jooxe::View.new(env,options)
+    view = Jooxe::View.new(env)
     
     if options[:class_name].nil?
       # root URL
       return [200, {"Content-Type" => "text/html"}, Rack::Response.new(view.render_path('root'))]
     end
-    
-    # connect to the database
-
-    
+   
     
     # create an instance of the class 
     begin 
