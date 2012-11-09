@@ -79,8 +79,8 @@ module Jooxe
       
       begin 
         new_class = nil
-        puts "consume_class loading @controller_class = #{class_name}.new"
-        eval "@controller_class = #{class_name}.new"
+        puts "consume_class loading @controller_class = Jooxe::#{class_name}.new"
+        eval "@controller_class = Jooxe::#{class_name}.new"
         
       rescue NameError => boom
         puts boom.inspect 
@@ -96,14 +96,14 @@ module Jooxe
       # dynamically create the model
       class_name = ($context.nil? ? '' : $context.camel_case) + paths[0].camel_case
       begin
-        puts "consume_class loading @model_class = #{class_name}.new"
-        eval "@model_class = #{class_name}.new"
+        puts "consume_class loading @model_class = Jooxe::#{class_name}.new"
+        eval "@model_class = Jooxe::#{class_name}.new"
       rescue NameError => boom
         puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
-        
-        @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:params => @params),class_name)
-          
+        if @database.has_key?(paths[0])
+          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:params => @params),class_name)
+        end
       end
       
       @controller_class.env=@env.merge(:params => @params)

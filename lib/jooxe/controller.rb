@@ -29,5 +29,9 @@ module Jooxe
       instance_id = params[params[:class_name].to_s+'_id'] 
       @instance = find({:where => {:id => instance_id}})
     end
+    
+    def add
+      
+    end
   end
 end

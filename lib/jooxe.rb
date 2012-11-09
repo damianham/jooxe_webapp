@@ -1,4 +1,8 @@
 require "yaml"
+
+ # load the configuration
+require 'config/jooxe'
+    
 require 'jooxe/framework'
 
 class JooxeApplication
@@ -6,9 +10,6 @@ class JooxeApplication
 
   def initialize
     puts "initializing jooxe"
-    
-    # load the configuration
-    require 'config/jooxe'
     
     @router = Jooxe::Router.new
 
@@ -21,7 +22,7 @@ class JooxeApplication
       # define a controller for this model
       class_name = ($context.nil? ? '' : $context.camel_case) + model_name.to_s.camel_case + 'Controller'
     
-      puts "class #{class_name} < Jooxe::Controller; end"
+      puts "create controller for model #{model_name} "
       Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end"  
       
     end
@@ -44,7 +45,7 @@ class JooxeApplication
         tables.each_key { |key|  
           class_name = ($context.nil? ? '' : $context.camel_case) + key.to_s.camel_case + 'Controller'
     
-          #puts "class #{class_name} < Jooxe::Controller; end"
+          puts "class #{class_name} < Jooxe::Controller; end"
           Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end"          
         }
          
@@ -74,6 +75,10 @@ class JooxeApplication
       # root URL
       return [200, {"Content-Type" => "text/html"}, Rack::Response.new(view.render_path('root'))]
     end
+    
+    # connect to the database
+
+    
     
     # create an instance of the class 
     begin 

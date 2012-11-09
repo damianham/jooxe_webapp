@@ -1,3 +1,5 @@
+require 'sequel'
+
 module Jooxe
   
   # base class for all models
