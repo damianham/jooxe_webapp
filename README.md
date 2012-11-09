@@ -1,7 +1,11 @@
 Jooxe
 =====
 
-Jooxe is the zero code web application framework.
+Jooxe is the zero code web application framework.  
+
+This is currently in alpha mode - it's all very experimental so don't expect anything
+to actually work right now.
+
 
 Visit http://www.jooxe.org for all the latest news and gossip.
 
