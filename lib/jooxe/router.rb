@@ -52,7 +52,7 @@ module Jooxe
           action = 'index'
         end
       
-        @route_info.update!({ :id => id, :action => action })
+        @route_info.update({ :id => id, :action => action })
         
         puts "after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
       

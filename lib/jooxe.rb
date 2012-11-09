@@ -89,8 +89,8 @@ class JooxeApplication
       
       outp = "db:#{database_name} class:#{class_name} id:#{id} action:#{action} " 
     
-      if ! @current_class.nil? && new_class.respond_to?(action.to_sym)
-        @current_class.call(action.to_sym)
+      if ! @current_class.nil? && @current_class.respond_to?(action.to_sym)
+        @current_class.send(action.to_sym)
       else
         [200, {"Content-Type" => "text/html"}, Rack::Response.new("Hello Rack! at #{outp}")]
       end
