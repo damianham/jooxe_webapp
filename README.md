@@ -81,5 +81,5 @@ Sequel ORM
 
 Jooxe uses the excellent sequel ORM (http://sequel.rubyforge.org) for database access.
 
-Of course you can plug in any ORM you like by creating models that extend the ORM class such as DataMapper
-or ActiveRecord.
+Of course you can plug in any ORM you like such as DataMapper or ActiveRecord by creating models 
+that extend the ORM class.
