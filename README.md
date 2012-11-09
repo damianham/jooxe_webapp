@@ -1,4 +1,5 @@
-== Jooxe
+Jooxe
+=====
 
 Jooxe is the zero code web application framework.
 
@@ -38,10 +39,12 @@ to create a controller, model and view templates for every database table.  This
 be a lot of fun when there are 2000 tables in your database.
 
 Databases have powerful features and db admins are far more capable of creating a
-database than scripts in a DSL (i.e. Rails migrations).  For example you may want to include triggers
-to journal modified/deleted records to a journal database.  You may want to define
-foreign key constraints on fields in a table - stuff like that.  You may want to define comments
-for each field in the table and a comment for the table itself.  
+database than scripts in a DSL (i.e. Rails migrations).  For example you may want to 
+include stored procedures and triggers e.g. to journal modified/deleted records to a journal database.  
+You may want to define user defined types and foreign key constraints on fields in a table.  
+You may want to define comments for each field in the table and a comment for the table itself.  
+Databases can outlive applications.  The application can change over time but the data is
+consistent.  For these and many reasons it makes sense to 
 
 
 The rake task to build the schema will work out the relationships between models based on the
@@ -74,3 +77,9 @@ on the number of managers.  Based on a per class configurable limit if there are
 the limit (e.g less than 100 managers) you get a drop down - otherwise it is an auto complete
 for you Jimmy.
 
+Sequel ORM
+
+Jooxe uses the excellent sequel ORM (http://sequel.rubyforge.org) for database access.
+
+Of course you can plug in any ORM you like by creating models that extend the ORM class such as DataMapper
+or ActiveRecord.

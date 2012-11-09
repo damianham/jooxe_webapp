@@ -38,7 +38,7 @@ module Jooxe
         class_name = id = action = nil
         #puts "before consume_class paths == " + path_elements.inspect
         @params[:class_name] = consume_class(path_elements)
-        @params[:current_class] = @current_class
+        @params[:controller_class] = @controller_class
 
         #puts "after consume_class class:#{@class_name} id:#{@id} action:#{@action} "  + path_elements.inspect
         id = consume_id(path_elements)
@@ -79,23 +79,38 @@ module Jooxe
       
       begin 
         new_class = nil
-        puts "consume_class loading @current_class = #{class_name}.new"
-        eval "new_class = #{class_name}.new"
-        @current_class = new_class
-        return paths.shift
+        puts "consume_class loading @controller_class = #{class_name}.new"
+        eval "@controller_class = #{class_name}.new"
         
       rescue NameError => boom
         puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @current_class = Jooxe::Delegate.create(@env.merge(:params => @params),class_name)
-          return paths.shift
+          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:params => @params),class_name)
         end
       end
-      if @current.class.nil?
+      if @controller_class.class.nil?
         raise "unknown class #{class_name}"
       end
-      raise "unknown class #{class_name} or #{paths[0]} is not a method of #{@current_class.class.name}"
+      
+      # dynamically create the model
+      class_name = ($context.nil? ? '' : $context.camel_case) + paths[0].camel_case
+      begin
+        puts "consume_class loading @model_class = #{class_name}.new"
+        eval "@model_class = #{class_name}.new"
+      rescue NameError => boom
+        puts boom.inspect 
+        # loading the class failed try the database schema and use the delegate
+        
+        @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:params => @params),class_name)
+          
+      end
+      
+      @controller_class.env=@env.merge(:params => @params)
+      @model_class.env = @env.merge(:params => @params)
+      
+      return paths.shift
+      
     end
   
     def consume_id(paths)
@@ -125,7 +140,7 @@ module Jooxe
       # check if it is a method that can be performed on the current class
       # for the last element in the path
       if paths.length ==1
-        if ! @current_class.nil? && @current_class.respond_to?(paths[0].to_sym)
+        if ! @controller_class.nil? && @controller_class.respond_to?(paths[0].to_sym)
           return paths.shift
         end 
       end

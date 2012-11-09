@@ -1,10 +1,15 @@
 module Jooxe
   
   # base class for all models
-  class Model < Hash
+  class Model < Sequel::Model
     
-    def find(options = {})
-      
+    def env=(env)
+      @env = env
+      self
+    end
+    
+    def params
+      @env[:params]
     end
 
   end

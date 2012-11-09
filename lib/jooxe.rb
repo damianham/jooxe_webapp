@@ -83,7 +83,7 @@ class JooxeApplication
       database_name = options[:database_name]
       params = options[:params]
       id = options[:id]
-      @current_class = options [:current_class]
+      @current_class = options [:controller_class]
       
       outp = "db:#{database_name} class:#{class_name} id:#{id} action:#{action} " 
     

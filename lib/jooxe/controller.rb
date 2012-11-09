@@ -3,7 +3,7 @@ module Jooxe
   # base class for all controllers, provides the CRUD operations for models
   class Controller
     
-    def setEnv(env)
+    def env=(env)
       @env = env
       self
     end
