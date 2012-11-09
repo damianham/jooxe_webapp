@@ -7,7 +7,8 @@ This is currently in alpha mode - it's all very experimental so don't expect any
 to actually work right now.
 
 
-Visit http://www.jooxe.org for all the latest news and gossip.
+Visit http://www.jooxe.org for all the latest news and gossip.  However since this
+is all very experimental don't expect to actually see anything there right now :)
 
 Controller and model classes are defined dynamically from the contents of a 
 schema file that you can generate from your database using the command 
@@ -22,7 +23,7 @@ These dynamically defined classes include all the regular CRUD methods.
 
 However.....
 
-You can create Controller and Model classes to redefine CRUD methods or extend
+You can create Controller classes to redefine CRUD methods or extend
 the basic CRUD behaviour.
 
 Rendering boilerplate is also eliminated with rendering of an instance of a class 
@@ -48,7 +49,8 @@ include stored procedures and triggers e.g. to journal modified/deleted records 
 You may want to define user defined types and foreign key constraints on fields in a table.  
 You may want to define comments for each field in the table and a comment for the table itself.  
 Databases can outlive applications.  The application can change over time but the data is
-consistent.  For these and many reasons it makes sense to 
+consistent.  For these and many reasons it makes sense to use the full power of your database engine.
+Start with your database and build the application around it - not the other way round.
 
 
 The rake task to build the schema will work out the relationships between models based on the
