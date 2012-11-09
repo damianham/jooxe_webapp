@@ -17,7 +17,7 @@ module Jooxe
     end
     
     def index
-      @collection = route_info[:model_class].all
+      @collection = route_info[:model_class].dataset
       
       respond_to do |format|
         format.html render_collection
