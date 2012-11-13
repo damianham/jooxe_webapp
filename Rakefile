@@ -43,7 +43,7 @@ Rake::TestTask.new do |t|
 end
 
 RSpec::Core::RakeTask.new do |spec|
-  spec.pattern = 'spec/erector/*_spec.rb'
+  spec.pattern = 'spec/**/*_spec.rb'
   spec.rspec_opts = [Dir["lib"].to_a.join(':')]
 end
 

@@ -75,7 +75,7 @@ module Jooxe
       return nil if paths[0].nil?
     
       # try to load the class 
-      class_name = ($context.nil? ? '' : $context.camel_case) + paths[0].camel_case + 'Controller'
+      class_name =  paths[0].camel_case + 'Controller'
       
       begin 
         new_class = nil
@@ -86,7 +86,7 @@ module Jooxe
         puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:route_info => @route_info),class_name)
+          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:route_info => @route_info),paths[0])
         end
       end
       if @controller_class.class.nil?
@@ -94,7 +94,7 @@ module Jooxe
       end
       
       # dynamically create the model
-      class_name = ($context.nil? ? '' : $context.camel_case) + paths[0].camel_case
+      class_name =  paths[0].camel_case
       begin
         #puts "consume_class loading @model_class = Jooxe::#{class_name}.new"
         eval "@model_class = Jooxe::#{class_name}.new"
@@ -102,7 +102,7 @@ module Jooxe
         #puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:route_info => @route_info),class_name)
+          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:route_info => @route_info),paths[0])
         end
       end
       

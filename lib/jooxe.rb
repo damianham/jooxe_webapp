@@ -14,43 +14,11 @@ class JooxeApplication
     @router = Jooxe::Router.new
 
     # load controllers and models
+    Jooxe::Loader.loadModels
     
-    Dir.glob('app/models/*.rb') do |f|
-      require f
-      
-      model_name = File.basename(f,'.rb')
-      # define a controller for this model
-      class_name = ($context.nil? ? '' : $context.camel_case) + model_name.to_s.camel_case + 'Controller'
-    
-      puts "create controller for model #{model_name} "
-      Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end"  
-      
-    end
-    
-    Dir.glob('app/controllers/*.rb') do |f|
-      require f
-    end
-    
-    $dbs = Hash.new 
+    Jooxe::Loader.loadControllers 
   
-    Dir.glob('db/*.yml') do |yml_file|
-      # load the database definitions
-      
-      file_name = yml_file.gsub('db/','').split('_')[0]
-      $dbs[file_name] = YAML::load( File.open( yml_file ) )['schema']
-      
-      #puts yml_file + " with filename " + file_name
-      # define a controller for every table
-      $dbs.each { |database_name,tables|  
-        tables.each_key { |key|  
-          class_name = ($context.nil? ? '' : $context.camel_case) + key.to_s.camel_case + 'Controller'
-    
-          puts "class #{class_name} < Jooxe::Controller; end"
-          Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end"          
-        }
-         
-      }
-    end
+    Jooxe::Loader.loadDatabases
     
   end  
   
@@ -93,7 +61,8 @@ class JooxeApplication
       outp = "db:#{database_name} class:#{class_name} id:#{id} action:#{action} " + envstr
     
       if ! @controller.nil? && @controller.respond_to?(action.to_sym)
-        response = Rack::Response.new(@controller.send(action.to_sym))
+        view = @controller.send(action.to_sym)
+        response = Rack::Response.new(view.render(options))
         [response.status, response.headers, response.body]        
       else
         [200, {"Content-Type" => "text/html"}, Rack::Response.new("Hello Rack! at #{outp}")]

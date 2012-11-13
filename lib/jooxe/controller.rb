@@ -1,6 +1,8 @@
 module Jooxe
   
   # base class for all controllers, provides the CRUD operations for models
+  # the return value from all methods in this class should be a Jooxe::View object
+  
   class Controller
     
     def env=(env)
@@ -16,65 +18,50 @@ module Jooxe
       @env[:route_info]
     end
     
-    def requested_formats
-      # "HTTP_ACCEPT"=>"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-      # get the requested formats from HTTP_ACCEPT
-      @env["HTTP_ACCEPT"].split(',').map { |x| 
-        case x
-        when /html$/
-          'html'
-        when /xml$/
-          'xml'
-        when /json$/
-          'json'
-        else
-          nil
-        end
-      }.compact
-    end
-    
-    def render_collection(options = {})
-      # render a collection of objects
-      
-      # the return value from this function is a TemplateRendering object      
-      TemplateRenderer.new(:collection => options[:collection] || @collection, 
-        :action => options[:action] || route_info[:action])
+    def render(options = {})
      
-    end
-    
-    def render_instance(options = {})
-         # render a single instance of an object
+       # render a collection of objects
+      if ! @collection.nil? && ! options.has_key(:collection)
+        options[:collection] = @collection
+      end
+      # or an instance
+      if ! @instance.nil? && ! options.has_key?(:instance)
+        options[:instance] = @instance
+      end
+      # ensure the action is setup
+      if ! options.has_key?(:action)
+        options[:action] = route_info[:action]
+      end
       
-      # the return value from this function is a TemplateRendering object
-      TemplateRenderer.new(:instance => options[:instance] || @instance, 
-        :action => options[:action] || route_info[:action])
+      # the return value from this function is a Jooxe::View object      
+      Jooxe::View.new(@env,self,options)
      
     end
     
     def index
       @collection = route_info[:model_class].class.dataset
       
-      render_collection 
+      render  :collection => @collection
     end
     
     def show
       instance_id = route_info[route_info[:class_name].to_s+'_id'] 
       @instance = route_info[:model_class][instance_id]
       
-      render_instance
+      render  :instance => @instance
     end
     
     def edit
       instance_id = route_info[route_info[:class_name].to_s+'_id'] 
       @instance = route_info[:model_class][instance_id]
       
-      render_form
+      render  :instance => @instance
     end
     
     def add
       # display the create form
       @instance = route_info[:model_class]
-      render_form
+      render  :instance => @instance
     end
     
     def create
