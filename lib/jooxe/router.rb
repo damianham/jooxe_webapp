@@ -40,6 +40,7 @@ module Jooxe
         @route_info[:class_name] = consume_class(path_elements)
         @route_info[:controller_class] = @controller_class
         @route_info[:model_class] = @model_class
+        @route_info[:column_info] = @column_info
 
         #puts "after consume_class class:#{@class_name} id:#{@id} action:#{@action} "  + path_elements.inspect
         id = consume_id(path_elements)
@@ -54,7 +55,7 @@ module Jooxe
       
         @route_info.update({ :id => id, :action => action })
         
-        puts "after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
+        #puts "after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
       
         @route_info[@route_info[:class_name].to_s+'_id'] = id unless @route_info[:class_name].nil? or id.nil?
       
@@ -78,7 +79,7 @@ module Jooxe
       
       begin 
         new_class = nil
-        puts "consume_class loading @controller_class = Jooxe::#{class_name}.new"
+        #puts "consume_class loading @controller_class = Jooxe::#{class_name}.new"
         eval "@controller_class = Jooxe::#{class_name}.new"
         
       rescue NameError => boom
@@ -89,20 +90,24 @@ module Jooxe
         end
       end
       if @controller_class.class.nil?
-        raise "unknown class #{class_name}"
+        raise "Class not found #{class_name}"
       end
       
       # dynamically create the model
       class_name = ($context.nil? ? '' : $context.camel_case) + paths[0].camel_case
       begin
-        puts "consume_class loading @model_class = Jooxe::#{class_name}.new"
+        #puts "consume_class loading @model_class = Jooxe::#{class_name}.new"
         eval "@model_class = Jooxe::#{class_name}.new"
       rescue NameError => boom
-        puts boom.inspect 
+        #puts boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
           @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:route_info => @route_info),class_name)
         end
+      end
+      
+      if @database.has_key?(paths[0])
+        @column_info = @database[paths[0]]
       end
       
       @controller_class.env=@env.merge(:route_info => @route_info)
@@ -136,8 +141,8 @@ module Jooxe
       # if the element is a known class we cannot consider it an action
       return nil if @database.has_key?(paths[0])
 
-      # check if it is a method that can be performed on the current class
-      # for the last element in the path
+      # if the path element is the last element in the path check 
+      # a method of the same name can be performed on the current controller class
       if paths.length ==1
         if ! @controller_class.nil? && @controller_class.respond_to?(paths[0].to_sym)
           return paths.shift

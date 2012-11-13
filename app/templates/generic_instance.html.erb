@@ -1,0 +1,14 @@
+<!-  render an instance in a table -->
+
+<table cellpadding="5" cellspacing="5">
+
+<% route_info[:column_info].each do |field| %>
+  <tr>
+    <th><%= field.titleize %></th>
+    <td><%= @instance[field.to_sym] %></td>
+  </tr>
+  
+<%   end %>
+  
+    
+</table>

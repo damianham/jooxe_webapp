@@ -3,6 +3,11 @@ class String
     return self if self !~ /_/ && self =~ /[A-Z]+.*/
     split('_').map{|e| e.capitalize}.join
   end
+  
+  def titleize
+    return self if self !~ /_/ && self =~ /[A-Z]+.*/
+    split('_').map{|e| e.capitalize}.join(' ')
+  end
 
   # originally copied from https://raw.github.com/rails/rails/master/activesupport/lib/active_support/core_ext/string/access.rb
   # 

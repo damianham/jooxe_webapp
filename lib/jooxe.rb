@@ -1,6 +1,6 @@
 require "yaml"
 
- # load the configuration
+# load the configuration
 require 'config/jooxe'
     
 require 'jooxe/framework'
@@ -57,25 +57,28 @@ class JooxeApplication
   
   def call(env)   
     
+    envstr = env.inspect
+    
     # decode path into class,id,action
     options = @router.route(env)
     
-#    begin
-#      
-#    rescue SyntaxError, NameError, RuntimeError, StandardError => rte
-#      puts rte.inspect
-#      return [404,{"Content-Type" => "text/html"}, Rack::Response.new("class not found")]
-#    end
-#    
+    #    begin
+    #      
+    #    rescue SyntaxError, NameError, RuntimeError, StandardError => rte
+    #      puts rte.inspect
+    #      return [404,{"Content-Type" => "text/html"}, Rack::Response.new("class not found")]
+    #    end
+    #    
+
     env[:route_info] = options
-    
-    view = Jooxe::View.new(env)
     
     if options[:class_name].nil?
       # root URL
+      view = Jooxe::View.new(env)
       return [200, {"Content-Type" => "text/html"}, Rack::Response.new(view.render_path('root'))]
     end
    
+    env[:request] = Rack::Request.new(env)
     
     # create an instance of the class 
     begin 
@@ -85,12 +88,13 @@ class JooxeApplication
       database_name = options[:database_name]
       params = options[:params]
       id = options[:id]
-      @current_class = options [:controller_class]
+      @controller = options [:controller_class]
       
-      outp = "db:#{database_name} class:#{class_name} id:#{id} action:#{action} " 
+      outp = "db:#{database_name} class:#{class_name} id:#{id} action:#{action} " + envstr
     
-      if ! @current_class.nil? && @current_class.respond_to?(action.to_sym)
-        @current_class.send(action.to_sym)
+      if ! @controller.nil? && @controller.respond_to?(action.to_sym)
+        response = Rack::Response.new(@controller.send(action.to_sym))
+        [response.status, response.headers, response.body]        
       else
         [200, {"Content-Type" => "text/html"}, Rack::Response.new("Hello Rack! at #{outp}")]
       end

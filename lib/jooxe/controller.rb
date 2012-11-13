@@ -9,50 +9,72 @@ module Jooxe
     end
     
     def params
-      @env[:params]
+      @env[:request].params
     end
     
     def route_info
       @env[:route_info]
     end
     
-    def index
-      @collection = route_info[:model_class].dataset
+    def requested_formats
+      # "HTTP_ACCEPT"=>"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+      # get the requested formats from HTTP_ACCEPT
+      @env["HTTP_ACCEPT"].split(',').map { |x| 
+        case x
+        when /html$/
+          'html'
+        when /xml$/
+          'xml'
+        when /json$/
+          'json'
+        else
+          nil
+        end
+      }.compact
+    end
+    
+    def render_collection(options = {})
+      # render a collection of objects
       
-      respond_to do |format|
-        format.html render_collection
-        format.xml render_collection_as_xml
-        format.json render_collection_as_json
-      end
+      # the return value from this function is a TemplateRendering object      
+      TemplateRenderer.new(:collection => options[:collection] || @collection, 
+        :action => options[:action] || route_info[:action])
+     
+    end
+    
+    def render_instance(options = {})
+         # render a single instance of an object
+      
+      # the return value from this function is a TemplateRendering object
+      TemplateRenderer.new(:instance => options[:instance] || @instance, 
+        :action => options[:action] || route_info[:action])
+     
+    end
+    
+    def index
+      @collection = route_info[:model_class].class.dataset
+      
+      render_collection 
     end
     
     def show
       instance_id = route_info[route_info[:class_name].to_s+'_id'] 
       @instance = route_info[:model_class][instance_id]
-      respond_to do |format|
-        format.html render
-        format.xml render_as_xml
-        format.json render_as_json
-      end
+      
+      render_instance
     end
     
     def edit
       instance_id = route_info[route_info[:class_name].to_s+'_id'] 
       @instance = route_info[:model_class][instance_id]
-      respond_to do |format|
-        format.html render
-        format.xml render_as_xml
-        format.json render_as_json
-      end
+      
+      render_form
     end
     
     def add
       # display the create form
-      respond_to do |format|
-        format.html render
-        format.xml render_as_xml
-        format.json render_as_json
-      end
+      @instance = route_info[:model_class]
+      render_form
     end
     
     def create
