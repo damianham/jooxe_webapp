@@ -31,13 +31,13 @@ module Jooxe
       @database = $dbs[@database_name] || $dbs['default'] || {}
     
       #puts "after consume database paths == " + path_elements.inspect
-      @route_info = Hash.new(:database => @database,
-        :database_name => @database_name)
+      @route_info = Hash.new # (:database => @database,         :database_name => @database_name)
       
       while path_elements.length > 0
-        class_name = id = action = nil
+        class_name = consume_class(path_elements)
+
         #puts "before consume_class paths == " + path_elements.inspect
-        @route_info[:class_name] = consume_class(path_elements)
+        @route_info[:class_name] = class_name.to_model_name unless class_name.nil?
         @route_info[:controller_class] = @controller_class
         @route_info[:model_class] = @model_class
         @route_info[:column_info] = @column_info
@@ -55,12 +55,13 @@ module Jooxe
       
         @route_info.update({ :id => id, :action => action })
         
-        #puts "after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
+        #puts "Router after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
       
-        @route_info[@route_info[:class_name].to_s+'_id'] = id unless @route_info[:class_name].nil? or id.nil?
+        @route_info[(class_name.to_s+'_id').to_sym] = id unless @route_info[:class_name].nil? or id.nil?
       
       end
-    
+      #puts "after finished routing " + @route_info.inspect
+      
       @route_info
     
     end
@@ -75,34 +76,36 @@ module Jooxe
       return nil if paths[0].nil?
     
       # try to load the class 
-      class_name =  paths[0].camel_case + 'Controller'
+      class_name =  paths[0].to_controller_name
+      new_class = nil
       
       begin 
-        new_class = nil
-        #puts "consume_class loading @controller_class = Jooxe::#{class_name}.new"
-        eval "@controller_class = Jooxe::#{class_name}.new"
+
+        #puts "Router.consume_class loading @controller_class = #{class_name}.new"
+        eval "new_class = #{class_name}.new"
         
       rescue NameError => boom
-        puts boom.inspect 
+        #puts "Router.NameError for new_class = #{class_name}.new " + boom.inspect 
         # loading the class failed try the database schema and use the delegate
-        if @database.has_key?(paths[0])
-          @controller_class = Jooxe::DynamicClassCreator.createController(@env.merge(:route_info => @route_info),paths[0])
+        if @database.has_key?(paths[0]) 
+          new_class = Jooxe::DynamicClassCreator.create_controller(@env.merge(:route_info => @route_info),paths[0])
         end
       end
-      if @controller_class.class.nil?
-        raise "Class not found #{class_name}"
+      
+      if new_class.nil?
+        raise NameError.new("Class not found #{class_name}")
       end
       
       # dynamically create the model
-      class_name =  paths[0].camel_case
+      class_name =  paths[0].to_model_name
       begin
-        #puts "consume_class loading @model_class = Jooxe::#{class_name}.new"
-        eval "@model_class = Jooxe::#{class_name}.new"
+        #puts "Router.consume_class loading @model_class = #{class_name}.new"
+        eval "@model_class = #{class_name}.new"
       rescue NameError => boom
-        #puts boom.inspect 
+        #puts "Router.NameError @model_class = #{class_name}.new " + boom.inspect 
         # loading the class failed try the database schema and use the delegate
         if @database.has_key?(paths[0])
-          @model_class = Jooxe::DynamicClassCreator.createModel(@env.merge(:route_info => @route_info),paths[0])
+          @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0])
         end
       end
       
@@ -110,6 +113,7 @@ module Jooxe
         @column_info = @database[paths[0]]
       end
       
+      @controller_class = new_class
       @controller_class.env=@env.merge(:route_info => @route_info)
       @model_class.env = @env.merge(:route_info => @route_info)
       

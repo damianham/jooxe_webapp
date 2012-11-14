@@ -1,0 +1,247 @@
+---
+schema:
+  prefix_name:
+    columns:
+      id:
+        column_name: id
+        ordinal_position: 1
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: ''
+      name:
+        column_name: name
+        ordinal_position: 2
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: Unique name for the group
+      updated_at:
+        column_name: updated_at
+        ordinal_position: 6
+        data_type: timestamp
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 
+        column_comment: ''
+      updated_by:
+        column_name: updated_by
+        ordinal_position: 7
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: ''
+    has_many:
+    - - user_groups
+    belongs_to: []
+    comment: The groups that a user can belong to
+  site:
+    columns:
+      id:
+        column_name: id
+        ordinal_position: 1
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: ''
+      sitecode:
+        column_name: sitecode
+        ordinal_position: 2
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 45
+        numeric_precision: 
+        column_comment: The sitecode for the location
+      location:
+        column_name: location
+        ordinal_position: 3
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: The descriptive location of the site
+      country:
+        column_name: country
+        ordinal_position: 4
+        data_type: char
+        is_nullable: 'NO'
+        character_maximum_length: 2
+        numeric_precision: 
+        column_comment: The country isocode for the site
+      country_name:
+        column_name: country_name
+        ordinal_position: 5
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 60
+        numeric_precision: 
+        column_comment: The country name
+      region_name:
+        column_name: region_name
+        ordinal_position: 6
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 45
+        numeric_precision: 
+        column_comment: The region, e.g. Europe, Asia
+      updated_at:
+        column_name: updated_at
+        ordinal_position: 7
+        data_type: timestamp
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 
+        column_comment: ''
+      updated_by:
+        column_name: updated_by
+        ordinal_position: 8
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: ''
+    has_many:
+    - - users
+    belongs_to: []
+    comment: The set of possible locations.
+  user_thing:
+    columns:
+      id:
+        column_name: id
+        ordinal_position: 1
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: ''
+      user_id:
+        column_name: user_id
+        ordinal_position: 2
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: Foreign key to the users table
+        references: users.id
+      group_id:
+        column_name: group_id
+        ordinal_position: 3
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: Foreign key to the ad_groups table
+        references: ad_groups.id
+      updated_at:
+        column_name: updated_at
+        ordinal_position: 6
+        data_type: timestamp
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 
+        column_comment: ''
+      updated_by:
+        column_name: updated_by
+        ordinal_position: 7
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: ''
+    has_many: []
+    belongs_to:
+    - - users
+    - - ad_groups
+    comment: Maps users to groups.   
+  prefix_user:
+    columns:
+      id:
+        column_name: id
+        ordinal_position: 1
+        data_type: int
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 10
+        column_comment: ''
+      mail:
+        column_name: mail
+        ordinal_position: 5
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: The email address of the user
+      account_name:
+        column_name: account_name
+        ordinal_position: 6
+        data_type: varchar
+        is_nullable: 'YES'
+        character_maximum_length: 64
+        numeric_precision: 
+        column_comment: The login name of the user 
+      title:
+        column_name: title
+        ordinal_position: 7
+        data_type: varchar
+        is_nullable: 'YES'
+        character_maximum_length: 64
+        numeric_precision: 
+        column_comment: The title of the user from title
+      given_name:
+        column_name: given_name
+        ordinal_position: 8
+        data_type: varchar
+        is_nullable: 'YES'
+        character_maximum_length: 64
+        numeric_precision: 
+        column_comment: The first name of the user 
+      sn:
+        column_name: sn
+        ordinal_position: 9
+        data_type: varchar
+        is_nullable: 'YES'
+        character_maximum_length: 64
+        numeric_precision: 
+        column_comment: The surname of the user 
+      country:
+        column_name: country
+        ordinal_position: 14
+        data_type: char
+        is_nullable: 'YES'
+        character_maximum_length: 2
+        numeric_precision: 
+        column_comment: The 2 letter ISO country code
+      sitecode:
+        column_name: sitecode
+        ordinal_position: 15
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 16
+        numeric_precision: 
+        column_comment: The user sitecode defines where they are
+        references: locations.sitecode
+      updated_at:
+        column_name: updated_at
+        ordinal_position: 54
+        data_type: timestamp
+        is_nullable: 'NO'
+        character_maximum_length: 
+        numeric_precision: 
+        column_comment: ''
+      updated_by:
+        column_name: updated_by
+        ordinal_position: 55
+        data_type: varchar
+        is_nullable: 'NO'
+        character_maximum_length: 255
+        numeric_precision: 
+        column_comment: ''
+    has_many:
+    - - user_groups
+    belongs_to:
+    - - locations
+    comment: User records 

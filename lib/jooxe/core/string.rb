@@ -1,116 +1,186 @@
+
 class String
+  
   def camel_case
     return self if self !~ /_/ && self =~ /[A-Z]+.*/
     split('_').map{|e| e.capitalize}.join
   end
   
+#  def titleize
+#    return self if self !~ /_/ && self =~ /[A-Z]+.*/
+#    split('_').map{|e| e.capitalize}.join(' ')
+#  end
+  
+  def to_model_name
+      to_s.camel_case
+  end
+    
+  def to_controller_name
+      to_model_name + 'Controller'
+  end
+
+    
+# originally copied from rails/activesupport/lib/active_suport/core_ext/string/inflections.rb
+# String inflections define new methods on the String class to transform names for different purposes.
+# For instance, you can figure out the name of a table from the name of a class.
+#
+#   "ScaleScore".tableize # => "scale_scores"
+#
+
+  # Returns the plural form of the word in the string.
+  #
+  #   "post".pluralize             # => "posts"
+  #   "octopus".pluralize          # => "octopi"
+  #   "sheep".pluralize            # => "sheep"
+  #   "words".pluralize            # => "words"
+  #   "the blue mailman".pluralize # => "the blue mailmen"
+  #   "CamelOctopus".pluralize     # => "CamelOctopi"
+  def pluralize
+    Jooxe::Inflector.pluralize(self)
+  end
+
+  # The reverse of +pluralize+, returns the singular form of a word in a string.
+  #
+  #   "posts".singularize            # => "post"
+  #   "octopi".singularize           # => "octopus"
+  #   "sheep".singularize            # => "sheep"
+  #   "word".singularize             # => "word"
+  #   "the blue mailmen".singularize # => "the blue mailman"
+  #   "CamelOctopi".singularize      # => "CamelOctopus"
+  def singularize
+    Jooxe::Inflector.singularize(self)
+  end
+
+  # +constantize+ tries to find a declared constant with the name specified
+  # in the string. It raises a NameError when the name is not in CamelCase
+  # or is not initialized.
+  #
+  # Examples
+  #   "Module".constantize # => Module
+  #   "Class".constantize  # => Class
+  def constantize
+    Jooxe::Inflector.constantize(self)
+  end
+
+  # By default, +camelize+ converts strings to UpperCamelCase. If the argument to camelize
+  # is set to <tt>:lower</tt> then camelize produces lowerCamelCase.
+  #
+  # +camelize+ will also convert '/' to '::' which is useful for converting paths to namespaces.
+  #
+  #   "active_record".camelize                # => "ActiveRecord"
+  #   "active_record".camelize(:lower)        # => "activeRecord"
+  #   "active_record/errors".camelize         # => "ActiveRecord::Errors"
+  #   "active_record/errors".camelize(:lower) # => "activeRecord::Errors"
+  def camelize(first_letter = :upper)
+    case first_letter
+      when :upper then Jooxe::Inflector.camelize(self, true)
+      when :lower then Jooxe::Inflector.camelize(self, false)
+    end
+  end
+  alias_method :camelcase, :camelize
+
+  # Capitalizes all the words and replaces some characters in the string to create
+  # a nicer looking title. +titleize+ is meant for creating pretty output. It is not
+  # used in the Rails internals.
+  #
+  # +titleize+ is also aliased as +titlecase+.
+  #
+  #   "man from the boondocks".titleize # => "Man From The Boondocks"
+  #   "x-men: the last stand".titleize  # => "X Men: The Last Stand"
   def titleize
-    return self if self !~ /_/ && self =~ /[A-Z]+.*/
-    split('_').map{|e| e.capitalize}.join(' ')
+    Jooxe::Inflector.titleize(self)
+  end
+  alias_method :titlecase, :titleize
+
+  # The reverse of +camelize+. Makes an underscored, lowercase form from the expression in the string.
+  #
+  # +underscore+ will also change '::' to '/' to convert namespaces to paths.
+  #
+  #   "ActiveRecord".underscore         # => "active_record"
+  #   "ActiveRecord::Errors".underscore # => active_record/errors
+  def underscore
+    Jooxe::Inflector.underscore(self)
   end
 
-  # originally copied from https://raw.github.com/rails/rails/master/activesupport/lib/active_support/core_ext/string/access.rb
-  # 
-  # If you pass a single Fixnum, returns a substring of one character at that
-  # position. The first character of the string is at position 0, the next at
-  # position 1, and so on. If a range is supplied, a substring containing
-  # characters at offsets given by the range is returned. In both cases, if an
-  # offset is negative, it is counted from the end of the string. Returns nil
-  # if the initial offset falls outside the string. Returns an empty string if
-  # the beginning of the range is greater than the end of the string.
+  # Replaces underscores with dashes in the string.
   #
-  #   str = "hello"
-  #   str.at(0)      #=> "h"
-  #   str.at(1..3)   #=> "ell"
-  #   str.at(-2)     #=> "l"
-  #   str.at(-2..-1) #=> "lo"
-  #   str.at(5)      #=> nil
-  #   str.at(5..-1)  #=> ""
-  #
-  # If a Regexp is given, the matching portion of the string is returned.
-  # If a String is given, that given string is returned if it occurs in
-  # the string. In both cases, nil is returned if there is no match.
-  #
-  #   str = "hello"
-  #   str.at(/lo/) #=> "lo"
-  #   str.at(/ol/) #=> nil
-  #   str.at("lo") #=> "lo"
-  #   str.at("ol") #=> nil
-  def at(position)
-    self[position]
+  #   "puni_puni" # => "puni-puni"
+  def dasherize
+    Jooxe::Inflector.dasherize(self)
   end
 
-  # Returns a substring from the given position to the end of the string.
-  # If the position is negative, it is counted from the end of the string.
+  # Removes the module part from the constant expression in the string.
   #
-  #   str = "hello"
-  #   str.from(0)  #=> "hello"
-  #   str.from(3)  #=> "lo"
-  #   str.from(-2) #=> "lo"
-  #
-  # You can mix it with +to+ method and do fun things like:
-  #
-  #   str = "hello"
-  #   str.from(0).to(-1) #=> "hello"
-  #   str.from(1).to(-2) #=> "ell"
-  def from(position)
-    self[position..-1]
+  #   "ActiveRecord::CoreExtensions::String::Inflections".demodulize # => "Inflections"
+  #   "Inflections".demodulize                                       # => "Inflections"
+  def demodulize
+    Jooxe::Inflector.demodulize(self)
   end
 
-  # Returns a substring from the beginning of the string to the given position.
-  # If the position is negative, it is counted from the end of the string.
+  # Replaces special characters in a string so that it may be used as part of a 'pretty' URL.
   #
-  #   str = "hello"
-  #   str.to(0)  #=> "h"
-  #   str.to(3)  #=> "hell"
-  #   str.to(-2) #=> "hell"
+  # ==== Examples
   #
-  # You can mix it with +from+ method and do fun things like:
+  #   class Person
+  #     def to_param
+  #       "#{id}-#{name.parameterize}"
+  #     end
+  #   end
   #
-  #   str = "hello"
-  #   str.from(0).to(-1) #=> "hello"
-  #   str.from(1).to(-2) #=> "ell"
-  def to(position)
-    self[0..position]
+  #   @person = Person.find(1)
+  #   # => #<Person id: 1, name: "Donald E. Knuth">
+  #
+  #   <%= link_to(@person.name, person_path %>
+  #   # => <a href="/person/1-donald-e-knuth">Donald E. Knuth</a>
+  def parameterize(sep = '-')
+    Jooxe::Inflector.parameterize(self, sep)
   end
 
-  # Returns the first character. If a limit is supplied, returns a substring
-  # from the beginning of the string until it reaches the limit value. If the
-  # given limit is greater than or equal to the string length, returns self.
+  # Creates the name of a table like Rails does for models to table names. This method
+  # uses the +pluralize+ method on the last word in the string.
   #
-  #   str = "hello"
-  #   str.first    #=> "h"
-  #   str.first(1) #=> "h"
-  #   str.first(2) #=> "he"
-  #   str.first(0) #=> ""
-  #   str.first(6) #=> "hello"
-  def first(limit = 1)
-    if limit == 0
-      ''
-    elsif limit >= size
-      self
-    else
-      to(limit - 1)
-    end
+  #   "RawScaledScorer".tableize # => "raw_scaled_scorers"
+  #   "egg_and_ham".tableize     # => "egg_and_hams"
+  #   "fancyCategory".tableize   # => "fancy_categories"
+  def tableize
+    Jooxe::Inflector.tableize(self)
   end
 
-  # Returns the last character of the string. If a limit is supplied, returns a substring
-  # from the end of the string until it reaches the limit value (counting backwards). If
-  # the given limit is greater than or equal to the string length, returns self.
+  # Create a class name from a plural table name like Rails does for table names to models.
+  # Note that this returns a string and not a class. (To convert to an actual class
+  # follow +classify+ with +constantize+.)
   #
-  #   str = "hello"
-  #   str.last    #=> "o"
-  #   str.last(1) #=> "o"
-  #   str.last(2) #=> "lo"
-  #   str.last(0) #=> ""
-  #   str.last(6) #=> "hello"
-  def last(limit = 1)
-    if limit == 0
-      ''
-    elsif limit >= size
-      self
-    else
-      from(-limit)
-    end
+  #   "egg_and_hams".classify # => "EggAndHam"
+  #   "posts".classify        # => "Post"
+  #
+  # Singular names are not handled correctly.
+  #
+  #   "business".classify # => "Busines"
+  def classify
+    Jooxe::Inflector.classify(self)
   end
+
+  # Capitalizes the first word, turns underscores into spaces, and strips '_id'.
+  # Like +titleize+, this is meant for creating pretty output.
+  #
+  #   "employee_salary" # => "Employee salary"
+  #   "author_id"       # => "Author"
+  def humanize
+    Jooxe::Inflector.humanize(self)
+  end
+
+  # Creates a foreign key name from a class name.
+  # +separate_class_name_and_id_with_underscore+ sets whether
+  # the method should put '_' between the name and 'id'.
+  #
+  # Examples
+  #   "Message".foreign_key        # => "message_id"
+  #   "Message".foreign_key(false) # => "messageid"
+  #   "Admin::Post".foreign_key    # => "post_id"
+  def foreign_key(separate_class_name_and_id_with_underscore = true)
+    Jooxe::Inflector.foreign_key(self, separate_class_name_and_id_with_underscore)
+  end
+
+  
+  
 end

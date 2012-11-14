@@ -8,6 +8,5 @@ end
 
 
 Dir.glob('lib/jooxe/*.rb') do |f|
-  puts "loading " + f.to_s
   require f
 end

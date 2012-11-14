@@ -14,11 +14,12 @@ class JooxeApplication
     @router = Jooxe::Router.new
 
     # load controllers and models
-    Jooxe::Loader.loadModels
+    Jooxe::Loader.load_models
     
-    Jooxe::Loader.loadControllers 
+    Jooxe::Loader.load_controllers 
   
-    Jooxe::Loader.loadDatabases
+    # load the database schema definitions
+    Jooxe::Loader.load_databases
     
   end  
   

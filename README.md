@@ -62,17 +62,17 @@ Furthermore.....
 Given that the foreign key constraints imply that a value must belong to a range of values from another table
 the form views can create an auto complete field or drop down menu using a title from the other table.  E.g
 
-    create table managers (
+    create table manager (
         id int not null auto_increment primary key,
         name varchar(255) not null comment "the full name of the manager"
     );
 
-    create table employees (
+    create table employee (
        id int not null auto_increment primary key,
        name varchar(255) not null "the full name of the employee",
        manager_id not null comment "foreign key on managers.id"
        key 'fk_user_manager',
-       constraint 'user_manager_id' foreign key ('manager_id') references 'managers'('id')
+       constraint 'user_manager_id' foreign key ('manager_id') references 'manager'('id')
     );
 
 
@@ -82,6 +82,15 @@ or auto complete data.  Whether it is a drop down menu or an auto complete field
 on the number of managers.  Based on a per class configurable limit if there are less than 
 the limit (e.g less than 100 managers) you get a drop down - otherwise it is an auto complete
 for you Jimmy.
+
+Oh let's talk about pluralization and singularization.  Forget it Jimmy.
+
+Path "/user" routes to the index action of the UserController, the model is User and the database table should be called 'user'.
+Path "/user/123/edit" routes to the 'edit' action of the UserController, the model is User and the database table should be called 'user'.
+
+It might seem like a good thing to call a table that contains user records 'users' so humans can look at it and
+think "ahhhh isn't that nice".  Well not if you are Dutch because then it should be called 'useren'. It's an
+unnecessary complexity with little real benefit.
 
 Sequel ORM
 
@@ -96,5 +105,6 @@ Required gems
 gem install sequel
 gem install tilt
 gem install json_pure
+gem install tilt
 
-A database adapter for sequel mysql, postgresql, h2 etc.
+And gem install a database adapter for sequel mysql, postgresql, h2 etc.

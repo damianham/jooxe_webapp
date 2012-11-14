@@ -5,10 +5,7 @@ module Jooxe
   
   class Controller
     
-    def env=(env)
-      @env = env
-      self
-    end
+    attr_writer :env
     
     def params
       @env[:request].params
@@ -20,7 +17,7 @@ module Jooxe
     
     def render(options = {})
      
-       # render a collection of objects
+      # render a collection of objects
       if ! @collection.nil? && ! options.has_key(:collection)
         options[:collection] = @collection
       end

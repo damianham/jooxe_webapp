@@ -5,13 +5,10 @@ module Jooxe
   # base class for all models
   class Model < Sequel::Model
     
-    def env=(env)
-      @env = env
-      self
-    end
+    attr_writer :env
     
     def params
-      @env[:params]
+      @env[:request].params
     end
 
   end
