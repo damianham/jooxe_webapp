@@ -4,6 +4,8 @@ require 'tilt'
 module Jooxe
   class View
     
+    attr_accessor :context
+    
     def initialize(env,binding_context,options = {})
       @env = env
       @context = binding_context  # the controller that performed the action
@@ -39,6 +41,14 @@ module Jooxe
         # uhmmm render with a layout
         render_template_with_layout(layout,template_file,options)
       end
+    end
+    
+    def collection
+      @options[:collection]
+    end
+    
+    def instance
+      @options[:instance]
     end
     
     private

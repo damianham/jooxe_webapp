@@ -4,7 +4,10 @@ module Jooxe
 
   class Router
  
-  
+    def initialize(glob_pattern = nil)
+      Jooxe::Loader.load_databases glob_pattern unless glob_pattern.nil?
+    end
+    
 =begin
   decode path into [database]/class[/id][/action]
   or with a nested path
@@ -23,28 +26,29 @@ module Jooxe
         path_elements.shift
       end
     
-      return {:root => true} if path_elements.length == 0
-    
       @database_name = consume_context(path_elements)
-    
+      
+      return {:root => true, :database_name => @database_name} if path_elements.length == 0
+      
       # use the default database if no prefix given
       @database = $dbs[@database_name] || $dbs['default'] || {}
     
-      #puts "after consume database paths == " + path_elements.inspect
       @route_info = Hash.new # (:database => @database,         :database_name => @database_name)
       
       while path_elements.length > 0
+        
+        # the next component should be a valid class name
         class_name = consume_class(path_elements)
 
-        #puts "before consume_class paths == " + path_elements.inspect
-        @route_info[:class_name] = class_name.to_model_name unless class_name.nil?
+        @route_info[:model_class_name] = class_name.to_model_name unless class_name.nil?
         @route_info[:controller_class] = @controller_class
         @route_info[:model_class] = @model_class
         @route_info[:column_info] = @column_info
+        @route_info[:table_name] = @table_name
 
-        #puts "after consume_class class:#{@class_name} id:#{@id} action:#{@action} "  + path_elements.inspect
+        # id and action may be nil
         id = consume_id(path_elements)
-        #puts "after consume_id class:#{@class_name} id:#{@id} action:#{@action} "  + path_elements.inspect
+
         action = consume_action(path_elements)
 
         if action.nil? and ! id.nil?
@@ -54,13 +58,10 @@ module Jooxe
         end
       
         @route_info.update({ :id => id, :action => action })
-        
-        #puts "Router after consume_action class:#{@route_info[:class_name]} id:#{id} action:#{action} " + path_elements.inspect
       
-        @route_info[(class_name.to_s+'_id').to_sym] = id unless @route_info[:class_name].nil? or id.nil?
+        @route_info[(class_name.to_s.singularize+'_id').to_sym] = id unless @route_info[:model_class_name].nil? or id.nil?
       
       end
-      #puts "after finished routing " + @route_info.inspect
       
       @route_info
     
@@ -75,47 +76,37 @@ module Jooxe
     def consume_class(paths)
       return nil if paths[0].nil?
     
-      # try to load the class 
+      # generate the controller name
       class_name =  paths[0].to_controller_name
-      new_class = nil
       
-      begin 
-
-        #puts "Router.consume_class loading @controller_class = #{class_name}.new"
-        eval "new_class = #{class_name}.new"
-        
-      rescue NameError => boom
-        #puts "Router.NameError for new_class = #{class_name}.new " + boom.inspect 
-        # loading the class failed try the database schema and use the delegate
-        if @database.has_key?(paths[0]) 
-          new_class = Jooxe::DynamicClassCreator.create_controller(@env.merge(:route_info => @route_info),paths[0])
-        end
-      end
+      possible_table_names = [paths[0], paths[0].singularize, paths[0].pluralize]
       
-      if new_class.nil?
+      @table_name = possible_table_names.dup.keep_if { |name| @database.has_key?(name)}[0]
+      
+      if @table_name.nil?     
         raise NameError.new("Class not found #{class_name}")
       end
       
-      # dynamically create the model
+      @column_info = @database[@table_name]
+      
+      begin 
+        # assign the controller class 
+        eval "@controller_class = #{class_name}.new"        
+        @controller_class.env=@env.merge(:route_info => @route_info)
+      rescue NameError => boom
+        # loading the class failed so create the controller class dynamically
+        @controller_class = Jooxe::DynamicClassCreator.create_controller(@env.merge(:route_info => @route_info),paths[0])
+      end
+
+      # assign the model
       class_name =  paths[0].to_model_name
       begin
-        #puts "Router.consume_class loading @model_class = #{class_name}.new"
         eval "@model_class = #{class_name}.new"
       rescue NameError => boom
-        #puts "Router.NameError @model_class = #{class_name}.new " + boom.inspect 
-        # loading the class failed try the database schema and use the delegate
-        if @database.has_key?(paths[0])
-          @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0])
-        end
+        # loading the class failed so create the model class dynamically
+        @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0])
+        @model_class.env = @env.merge(:route_info => @route_info)
       end
-      
-      if @database.has_key?(paths[0])
-        @column_info = @database[paths[0]]
-      end
-      
-      @controller_class = new_class
-      @controller_class.env=@env.merge(:route_info => @route_info)
-      @model_class.env = @env.merge(:route_info => @route_info)
       
       return paths.shift
       

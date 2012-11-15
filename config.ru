@@ -2,6 +2,8 @@
 require 'rack'
 require 'rack/contrib'
 
+require 'environment'
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.dirname(__FILE__) + "/lib")
 

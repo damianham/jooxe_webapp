@@ -1,4 +1,37 @@
 require 'rubygems'
+require 'yaml'
+require 'sequel'
+
+# connect to an in-memory database
+DB = Sequel.connect('jdbc:sqlite::memory:')
+
+# load the fixtures into the db
+# 
+# create an items table
+DB.create_table :users do
+  primary_key :id
+  String :account_name
+  String :title
+  String :given_name
+  String :surname
+  String :country
+  String :mail
+  DateTime :updated_at
+  String :updated_by
+end
+
+# create a dataset from the items table
+users = DB[:users]
+
+# load the fixture with yaml
+db = YAML::load( File.open( 'test/db/fixtures/users.yml' ) )
+
+# populate the table
+db.values.each do |v| 
+  users.insert(v)
+end
+
+
 require 'jooxe'
 
 
@@ -19,4 +52,3 @@ RSpec.configure do |config|
   config.mock_with :rspec
 
 end
-

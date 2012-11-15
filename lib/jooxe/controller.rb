@@ -18,7 +18,7 @@ module Jooxe
     def render(options = {})
      
       # render a collection of objects
-      if ! @collection.nil? && ! options.has_key(:collection)
+      if ! @collection.nil? && ! options.has_key?(:collection)
         options[:collection] = @collection
       end
       # or an instance
@@ -36,14 +36,35 @@ module Jooxe
     end
     
     def index
-      @collection = route_info[:model_class].class.dataset
+      model = route_info[:model_class]
+      
+      if model.respond_to?(:all)
+        @collection = model.all
+      elsif model.respond_to?(:dataset)
+        @collection = model.dataset
+      else
+        table_name = route_info[:model_class].table_name || route_info[:table_name]
+        
+        dataset = DB[table_name.to_sym]
+       
+        @collection = dataset
+      end
       
       render  :collection => @collection
     end
     
     def show
-      instance_id = route_info[route_info[:class_name].to_s+'_id'] 
-      @instance = route_info[:model_class][instance_id]
+      model = route_info[:model_class]
+      
+      if model.respond_to?(:dataset)
+        @instance = model.dataset[:id => route_info[:id]]
+      else
+        table_name = route_info[:model_class].table_name || route_info[:table_name]
+        
+        dataset = DB[table_name.to_sym]
+       
+        @instance = dataset[:id => route_info[:id]]
+      end
       
       render  :instance => @instance
     end

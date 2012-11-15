@@ -12,13 +12,16 @@ class String
 #  end
   
   def to_model_name
-      to_s.camel_case
+      to_s.singularize.camel_case
   end
     
   def to_controller_name
-      to_model_name + 'Controller'
+      to_model_name.pluralize + 'Controller'
   end
 
+  def is_plural?
+    pluralize == self
+  end
     
 # originally copied from rails/activesupport/lib/active_suport/core_ext/string/inflections.rb
 # String inflections define new methods on the String class to transform names for different purposes.

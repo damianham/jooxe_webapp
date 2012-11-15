@@ -6,6 +6,7 @@ module Jooxe
   class Model < Sequel::Model
     
     attr_writer :env
+    attr_accessor :table_name
     
     def params
       @env[:request].params

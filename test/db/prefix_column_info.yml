@@ -199,7 +199,7 @@ schema:
         character_maximum_length: 64
         numeric_precision: 
         column_comment: The first name of the user 
-      sn:
+      surname:
         column_name: sn
         ordinal_position: 9
         data_type: varchar
@@ -215,15 +215,6 @@ schema:
         character_maximum_length: 2
         numeric_precision: 
         column_comment: The 2 letter ISO country code
-      sitecode:
-        column_name: sitecode
-        ordinal_position: 15
-        data_type: varchar
-        is_nullable: 'NO'
-        character_maximum_length: 16
-        numeric_precision: 
-        column_comment: The user sitecode defines where they are
-        references: locations.sitecode
       updated_at:
         column_name: updated_at
         ordinal_position: 54

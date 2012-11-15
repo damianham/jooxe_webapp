@@ -28,13 +28,23 @@ module Jooxe
       
       $dbs = Hash.new if $dbs.nil?
     
+      files = Dir.glob(glob_pattern)
+      
       #puts "loading databases with glob pattern == #{glob_pattern}"
-      Dir.glob(glob_pattern) do |yml_file|
+      files.each do |yml_file|
         # load the database definitions
       
-        file_name = yml_file.gsub('db/','').split('_')[0]
-        $dbs[file_name] = YAML::load( File.open( yml_file ) )['schema']
-      
+        file_name = File.basename(yml_file,'.yml').split('_')[0]        
+        
+        db = YAML::load( File.open( yml_file ) )['schema']
+        
+        $dbs[file_name] = db
+        
+        # if only 1 db files exists then set it as the default - unless it is called default
+        if files.size == 1 && file_name != 'default'
+          $dbs['default'] = db
+        end
+        
         #puts yml_file + " with filename " + file_name
 
       end

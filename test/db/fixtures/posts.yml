@@ -1,0 +1,17 @@
+one:
+  id: 1
+  title: this is the title of post 1
+  updated_at: time
+  updated_by: admin
+  
+two:
+  id: 2
+  title: this is the title of post 2
+  updated_at: time
+  updated_by: admin
+  
+three:
+  id: 3
+  title: this is the title of post 3
+  updated_at: time
+  updated_by: admin

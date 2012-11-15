@@ -1,6 +1,6 @@
 ---
 schema:
-  post:
+  posts:
     columns:
       id:
         column_name: id
@@ -35,11 +35,11 @@ schema:
         numeric_precision: 
         column_comment: ''
     has_many:
-    - - comment
+    - - comments
     belongs_to:
-    - - user
+    - - users
     comment: An original post
-  comment:
+  comments:
     columns:
       id:
         column_name: id
@@ -75,9 +75,9 @@ schema:
         column_comment: ''
     has_many: []
     belongs_to:
-    - - post
+    - - posts
     comment: A comment on a post   
-  user:
+  users:
     columns:
       id:
         column_name: id
@@ -152,6 +152,6 @@ schema:
         numeric_precision: 
         column_comment: ''
     has_many:
-    - - post
+    - - posts
     belongs_to: []
     comment: User records 

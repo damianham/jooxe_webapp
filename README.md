@@ -83,14 +83,23 @@ on the number of managers.  Based on a per class configurable limit if there are
 the limit (e.g less than 100 managers) you get a drop down - otherwise it is an auto complete
 for you Jimmy.
 
-Oh let's talk about pluralization and singularization.  Forget it Jimmy.
+OK let's talk about pluralization and singularization. 
 
-Path "/user" routes to the index action of the UserController, the model is User and the database table should be called 'user'.
-Path "/user/123/edit" routes to the 'edit' action of the UserController, the model is User and the database table should be called 'user'.
+Controller names are plural, model names are singular, table names can be either.
 
-It might seem like a good thing to call a table that contains user records 'users' so humans can look at it and
-think "ahhhh isn't that nice".  Well not if you are Dutch because then it should be called 'useren'. It's an
-unnecessary complexity with little real benefit.
+Path "/user" 
+    routes to the index action of the UsersController
+    the model is User and the table name can be 'user' or 'users.
+
+Path "/user/123/edit" 
+    routes to the 'edit' action of the UsersController, 
+    the model is User, params[:id] == 123 and the table name can be 'user' or 'users.
+
+Path "/user/123/contacts/456/edit" 
+    routes to the 'edit' action of the ContactsController, 
+    the model is Contact, params[:user_id] == 123, params[:id] == 456
+    and the table name can be  'contact' or 'contacts.
+
 
 Sequel ORM
 

@@ -1,12 +1,17 @@
 require 'spec_helper'
 
-Jooxe::Loader.load_databases 'test/db/*.yml'
+
 
 module Jooxe
   describe Router do
   
+    before(:all) do
+      $dbs = nil
+      Jooxe::Loader.load_databases 'test/db/default*.yml'
+    end
+    
     before(:each) do
-      @router = Router.new
+      @router = Router.new 
       @env = Hash.new
     end
     
@@ -16,85 +21,94 @@ module Jooxe
       options[:root].should eq(true)
     end
     
-    it "should route to a pluralized controller index" do
+    it "should route to a controller index" do
       @env["PATH_INFO"] = "/user"
       options = @router.route(@env)
-      options[:class_name].should eq('User')
+      options[:model_class_name].should eq('User')
+      options[:table_name].should eq('user')
+      options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('index')
     end
-    
-    it "should route to a singularized controller index" do
-      @env["PATH_INFO"] = "/user"
-      options = @router.route(@env)
-      options[:class_name].should eq('User')
-      options[:action].should eq('index')
-    end
-    
+   
     it "should route to a controller action to view an instance" do
       @env["PATH_INFO"] = "/user/123"
       options = @router.route(@env)
-      options[:class_name].should eq('User')
+      options[:model_class_name].should eq('User')
+      options[:table_name].should eq('user')
+      options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('show')
-      options[:user_id].should eq('123')
+      options[:id].should eq('123')
     end
     
     it "should route to a controller action" do
       @env["PATH_INFO"] = "/user/123/edit"
       options = @router.route(@env)
-      options[:class_name].should eq('User')
+      options[:model_class_name].should eq('User')
+      options[:table_name].should eq('user')
+      options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('edit')
-      options[:user_id].should eq('123')
+      options[:id].should eq('123')
     end
     
     it "should route to a nested controller index" do
-      @env["PATH_INFO"] = "/user/123/user_group"
+      @env["PATH_INFO"] = "/user/123/post"
       options = @router.route(@env)
-      options[:class_name].should eq('UserGroup')
+      options[:model_class_name].should eq('Post')
+      options[:table_name].should eq('post')
+      options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('index')
       options[:user_id].should eq('123')
     end
     
     it "should route to a nested controller action to view an instance" do
-      @env["PATH_INFO"] = "/user/123/user_group/456"
+      @env["PATH_INFO"] = "/user/123/post/456"
       options = @router.route(@env)
-      options[:class_name].should eq('UserGroup')
+      options[:model_class_name].should eq('Post')
+      options[:table_name].should eq('post')
+      options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('show')
       options[:user_id].should eq('123')
-      options[:user_group_id].should eq('456')
+      options[:id].should eq('456')
     end
     
     it "should route to a nested controller action" do
-      @env["PATH_INFO"] = "/user/123/user_group/456/edit"
+      @env["PATH_INFO"] = "/user/123/post/456/edit"
       options = @router.route(@env)
-      options[:class_name].should eq('UserGroup')
+      options[:model_class_name].should eq('Post')
+      options[:table_name].should eq('post')
+      options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('edit')
       options[:user_id].should eq('123')
-      options[:user_group_id].should eq('456')
+      options[:id].should eq('456')
     end
+    
+   
     
     it "should raise an error with an invalid class index" do
       @env["PATH_INFO"] = "/dummydumdum"
-      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumController")
+      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumsController")
     end
     
     it "should raise an error with an invalid class action" do
       @env["PATH_INFO"] = "/dummydumdum/123/edit"
-      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumController")
+      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumsController")
     end
     
     it "should raise an error with an invalid nested class" do
       @env["PATH_INFO"] = "/user/123/dummydumdum"
-      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumController")
+      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumsController")
     end
     
     it "should raise an error with an invalid action" do
       @env["PATH_INFO"] = "/user/123/dummydumdum"
-      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumController")
+      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumsController")
     end
     
     it "should raise an error with an invalid nested class action" do
-      @env["PATH_INFO"] = "/user/123/user_group/456/dummydumdum"
-      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumController")
+      @env["PATH_INFO"] = "/user/123/post/456/dummydumdum"
+      expect { options = @router.route(@env)}.to raise_error(NameError,"Class not found DummydumdumsController")
     end
+    
+
   end
 end

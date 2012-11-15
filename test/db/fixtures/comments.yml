@@ -1,0 +1,17 @@
+one:
+  id: 1
+  body: this is the body of comment 1
+  updated_at: time
+  updated_by: admin
+  
+two:
+  id: 2
+  body: this is the body of comment 2
+  updated_at: time
+  updated_by: admin
+  
+three:
+  id: 3
+  body: this is the body of comment 3
+  updated_at: time
+  updated_by: admin
