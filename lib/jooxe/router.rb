@@ -33,7 +33,7 @@ module Jooxe
       # use the default database if no prefix given
       @database = $dbs[@database_name] || $dbs['default'] || {}
     
-      @route_info = Hash.new # (:database => @database,         :database_name => @database_name)
+      @route_info = Hash.new(:database => @database, :database_name => @database_name)
       
       while path_elements.length > 0
         
@@ -51,10 +51,26 @@ module Jooxe
 
         action = consume_action(path_elements)
 
-        if action.nil? and ! id.nil?
-          action = 'show'
-        elsif action.nil? and id.nil?
-          action = 'index'
+        if action.nil? 
+          
+          if id.nil?
+            case env["REQUEST_METHOD"]
+            when "POST"
+              action = 'create'
+            else
+              action = 'index'
+            end
+          else
+            case env["REQUEST_METHOD"]
+            when "PUT"
+              action = 'update'
+            when "DELETE"
+              action = 'destroy'
+            else
+              action = 'show'
+            end
+          end          
+
         end
       
         @route_info.update({ :id => id, :action => action })
@@ -87,7 +103,7 @@ module Jooxe
         raise NameError.new("Class not found #{class_name}")
       end
       
-      @column_info = @database[@table_name]
+      @column_info = @database[@table_name]["columns"]
       
       begin 
         # assign the controller class 
@@ -102,10 +118,10 @@ module Jooxe
       class_name =  paths[0].to_model_name
       begin
         eval "@model_class = #{class_name}.new"
+        @model_class.env = @env.merge(:route_info => @route_info)
       rescue NameError => boom
         # loading the class failed so create the model class dynamically
         @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0])
-        @model_class.env = @env.merge(:route_info => @route_info)
       end
       
       return paths.shift

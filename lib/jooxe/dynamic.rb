@@ -67,14 +67,14 @@ module Jooxe
     def DynamicClassCreator.define_controller(name)
       class_name = name.to_controller_name
     
-      #puts "DynamicClassCreator creating controller class #{class_name} < Jooxe::Controller; end"
+      #puts "DynamicClassCreator define controller class #{class_name} < Jooxe::Controller; end"
       Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end" 
     end
     
     def DynamicClassCreator.define_model(name)
       class_name = name.to_model_name
        
-      #puts "DynamicClassCreator creating model class #{class_name} < Jooxe::Model; end"
+      #puts "DynamicClassCreator define model class #{class_name} < Jooxe::Model; end"
       Jooxe::module_eval "class #{class_name} < Jooxe::Model; end" 
       
     end
@@ -84,6 +84,7 @@ module Jooxe
       
       self.define_controller(name)
       
+      #puts "create new controller with " + "new_class = #{name.to_controller_name}.new"
       Jooxe::module_eval "new_class = #{name.to_controller_name}.new"
  
     end
@@ -94,6 +95,7 @@ module Jooxe
       
       self.define_model(name)
       
+      #puts "create new model with "+ "new_class = #{name.to_model_name}.new"
       Jooxe::module_eval "new_class = #{name.to_model_name}.new"
       #new_class
     end

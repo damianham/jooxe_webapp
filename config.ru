@@ -29,15 +29,16 @@ use Rack::MethodOverride
 use Jooxe::RequestId
 
 # Drop the body of the response on HEAD requests.
-use Rack::Head                          #use ActionDispatch::Head
-
-use Rack::Reloader                      #use ActionDispatch::Reloader
+use Rack::Head        
+use Rack::ShowExceptions
+use Rack::Reloader          
 
 # enables conditional GET using If-None-Match and If-Modified-Since.
 use Rack::ConditionalGet
 
 # Automatically sets the ETag header on all String bodies.
 use Rack::ETag
+
 
 run JooxeApplication.new
 
