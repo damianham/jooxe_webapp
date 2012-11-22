@@ -114,6 +114,6 @@ Required gems
 gem install sequel
 gem install tilt
 gem install json_pure
-gem install tilt
+gem install capybara
 
 And gem install a database adapter for sequel mysql, postgresql, h2 etc.

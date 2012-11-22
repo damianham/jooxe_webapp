@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'yaml'
 require 'sequel'
+require 'capybara/rspec'
 
 # connect to an in-memory database
 DB = Sequel.connect('jdbc:sqlite::memory:')
