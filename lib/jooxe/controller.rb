@@ -35,9 +35,9 @@ module Jooxe
     end
     
     def create
-      puts "env == " + @env.inspect
+      puts "params == " + params["user"].inspect
       # insert the new instance
-      get_dataset.insert(params)
+      get_dataset.insert(params["user"])
       redirect_to :index
     end
     
