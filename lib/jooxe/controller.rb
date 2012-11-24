@@ -118,7 +118,7 @@ module Jooxe
       path = path_or_sym_or_hash
       if path_or_sym_or_hash.is_a?(Symbol)
         # convert to a path for the action
-        path = path_for_action(@instance || route_info[:model_class], path_or_sym_or_hash)
+        path = path_for_action(@instance || route_info[:model_class], path_or_sym_or_hash, route_info)
       elsif path_or_sym_or_hash.is_a?(Hash)
         path = path_or_sym_or_hash[:path]
         options = path_or_sym_or_hash
@@ -133,7 +133,7 @@ module Jooxe
         options[:instance] = @instance
       end
       
-      view = Jooxe::View.new(@env,self,options.merge({:redirect_to => path.to_s}))
+      Jooxe::View.new(@env,self,options.merge({:redirect_to => path.to_s}))
     end
     
     # get the base dataset for the class
@@ -149,8 +149,7 @@ module Jooxe
       
     end
     
-    # get a collection of records from the class dataset
-    
+    # get a collection of records from the class dataset    
     def get_collection(where = nil)
       dataset = get_dataset(where)
       

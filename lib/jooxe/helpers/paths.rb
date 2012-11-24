@@ -2,10 +2,10 @@ module Jooxe
   module Path
     
     # convert a class or instance and an action into a URI
-    def path_for_action(object_or_class,action = nil)
+    def path_for_action(object_or_class,action = nil,options = {})
       
       # get the context prefix - the parts of the PATH_INFO preceeding the current class
-      context = route_info[:context_prefix] || ''
+      context = options[:context_prefix] || ''
       # '/' means no context so set it to the empty string
       context = '' if context == '/'
       
