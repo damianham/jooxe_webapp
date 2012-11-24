@@ -10,22 +10,23 @@ module Jooxe
     
     attr_writer :env
   
+    # Get and render a collection of all instance of the model class 
     def index
       
       @collection = get_collection
       
-      #puts "index collection == " + @collection.inspect
-      
       render  :collection => @collection
     end
     
+    # Get and render a single instance of the model class
     def show
      
       @instance = get_instance(params[:id])
-      #puts "instance == " + @instance.inspect
+
       render  :instance => @instance
     end
     
+    # Get and render a single instance of the model class in a web form
     def edit
        
       @instance = get_instance(params[:id])
@@ -33,32 +34,41 @@ module Jooxe
       render  :instance => @instance
     end
     
+    # Create a new empty instance of the model class and render in a web form
     def add
       # display the create form
       @instance = route_info[:model_class]
+      
       render  :instance => @instance
     end
     
+    # Creates a new instance with the params values for the model class 
+    # and saves it.
+    # 
+    # redirects to the class index
     def create
-      #puts "create params == " + params["user"].inspect
       # insert the new instance
       id = get_dataset.insert(params[class_name])
+      
       @instance = get_instance(id)
-      #puts "create instance == " + @instance.inspect
+
       redirect_to :index
     end
     
+    # Update and render a single instance of the model class
+    # with the params values for the model class name
     def update
       
       @instance = get_instance(params[:id])
       
-#      puts "update instance == " + @instance.inspect
-#      puts "with " + params[class_name].inspect
-      
       @instance.update(params[class_name])
+      
       render  :instance => @instance
     end
     
+    # Delete an instance for the given ID in params[:id]
+    # 
+    # redirects to the class index
     def destroy
       dataset = get_dataset
       
@@ -126,9 +136,8 @@ module Jooxe
       view = Jooxe::View.new(@env,self,options.merge({:redirect_to => path.to_s}))
     end
     
+    # get the base dataset for the class
     def get_dataset(options = nil)
-      
-      #model_class = 
       
       if options.nil? || ! options.is_a?(Hash)
         dataset = route_info[:model_class].class.dataset
@@ -136,22 +145,11 @@ module Jooxe
         dataset = route_info[:model_class].class.dataset.where(options)
       end
       
-      yield dataset  if block_given?
-
-      
-      #      if model_class.respond_to?(:all)
-      #        dataset = model_class.all
-      #      elsif model_class.respond_to?(:dataset)
-      #        dataset = model_class.dataset
-      #      else
-      #        table_name = model_class.table_name || route_info[:table_name]
-      #        
-      #        dataset = DB[table_name.to_sym]
-      #      end
-      
       dataset
       
     end
+    
+    # get a collection of records from the class dataset
     
     def get_collection(where = nil)
       dataset = get_dataset(where)
@@ -163,6 +161,7 @@ module Jooxe
       dataset
     end
     
+    # get a single instance of a record from the class dataset
     def get_instance(id) 
       route_info[:model_class].class[id]
     end
