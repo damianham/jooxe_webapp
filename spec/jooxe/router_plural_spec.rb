@@ -33,7 +33,7 @@ module Jooxe
       options[:table_name].should eq('posts')
       options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('show')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to pluralized a controller action" do
@@ -42,7 +42,7 @@ module Jooxe
       options[:model_class_name].should eq('Post')
       options[:table_name].should eq('posts')
       options[:action].should eq('edit')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to a pluralized nested controller index" do
@@ -51,7 +51,7 @@ module Jooxe
       options[:model_class_name].should eq('Comment')
       options[:table_name].should eq('comments')
       options[:action].should eq('index')
-      options[:post_id].should eq('123')
+      options[:params][:post_id].should eq('123')
     end
     
     it "should route to a pluralized nested controller action to view an instance" do
@@ -60,8 +60,8 @@ module Jooxe
       options[:model_class_name].should eq('Comment')
       options[:table_name].should eq('comments')
       options[:action].should eq('show')
-      options[:post_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:post_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
     it "should route to a pluralized nested controller action" do
@@ -70,8 +70,8 @@ module Jooxe
       options[:model_class_name].should eq('Comment')
       options[:table_name].should eq('comments')
       options[:action].should eq('edit')
-      options[:post_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:post_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
 

@@ -68,14 +68,17 @@ module Jooxe
       @env["PATH_INFO"] = path
       @env["REQUEST_PATH"] = @env["PATH_INFO"]
       @env["REQUEST_METHOD"] = req_method.nil? ? "GET" : req_method
+      
+      req = Rack::Request.new(@env)
+      @env[:request] = req
+      
     end
+    
+    
     # we need to setup fixture data in order to test the controller methods
     
     it "should retrieve a collection when calling index" do
-      #@env["PATH_INFO"] = "/users"
       setup_URI "http://localhost:9292/users"
-      #@env["QUERY_STRING"] = "id=123&post[title]=Hello"
-      #@env["REQUEST_PATH"] = "/users"
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('users')
@@ -88,7 +91,7 @@ module Jooxe
     end
     
     it "should retrieve an instance when calling show" do
-      #@env["PATH_INFO"] = "/users/1"
+
       setup_URI "http://localhost:9292/users/1"
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
@@ -96,19 +99,15 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('show')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
       
       view.instance.should be_an_instance_of(User)
       view.instance.id.should eq(1)
     end
     
     it "should retrieve an instance when calling edit" do
-      #@env["PATH_INFO"] = "/users/2/edit"
+
       setup_URI "http://localhost:9292/users/2/edit"
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
@@ -116,19 +115,15 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('edit')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
-      
+     
       view.instance.should be_an_instance_of(User)
       view.instance.id.should eq(2)
     end
     
     it "should create an empty instance when calling add" do
-      #@env["PATH_INFO"] = "/users/add"
+
       setup_URI "http://localhost:9292/users/add"
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
@@ -136,12 +131,8 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('add')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
       
       view.instance.should be_an_instance_of(User)
       view.instance.id.should be_nil
@@ -149,7 +140,7 @@ module Jooxe
     end
     
     it "should create and render a new instance when calling create with action in path info" do
-      #@env["PATH_INFO"] = "/users/create"
+
       setup_URI "http://localhost:9292/users/create?user[given_name]=Fred&user[mail]=fred@example.com"
       
       options = @router.route(@env)
@@ -158,20 +149,16 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('create')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      puts "instance == " + view.instance.inspect
-      
+            
       view.instance.should be_an_instance_of(User)
-      view.instance.name.should eq('Fred')
+      view.instance.given_name.should eq('Fred')
       view.instance.mail.should eq('fred@example.com')
     end
-   
+
     it "should create and render a new instance when calling create with post verb" do
-      #@env["PATH_INFO"] = "/users"
+
       setup_URI("http://localhost:9292/users/?user[given_name]=John&user[mail]=john@example.com","POST")
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
@@ -179,21 +166,17 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('create')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
       
-      puts "instance == " + view.instance.inspect
-      
       view.instance.should be_an_instance_of(User)
 
-      view.instance.name.should eq('John')
+      view.instance.given_name.should eq('John')
       view.instance.mail.should eq('john@example.com')
     end
     
     it "should delete an instance when calling destroy and redirect to index with action in path info" do
-      #@env["PATH_INFO"] = "/users/5/destroy"
+
       setup_URI("http://localhost:9292/users/5/destroy")
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
@@ -201,20 +184,15 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('destroy')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
-      
+        
       view.instance.should be_nil
       view.redirect_to.should eq('/users')
     end
     
        
     it "should delete an instance when calling destroy and redirect to index with delete verb" do
-      #@env["PATH_INFO"] = "/users/4"
 
       setup_URI("http://localhost:9292/users/4","DELETE")
       options = @router.route(@env)
@@ -223,41 +201,33 @@ module Jooxe
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('destroy')
       
-      #puts "model == " + options[:model_class].inspect
-      
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
       
       view.instance.should be_nil
       view.redirect_to.should eq('/users')
     end
     
     it "should update an instance when calling update with action in path info" do
-      #@env["PATH_INFO"] = "/users/2/update"
+
       setup_URI("http://localhost:9292/users/2/update?user[mail]=johnboy@thewaltons.com","POST")
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('users')
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('update')
-      
-      #puts "model == " + options[:model_class].inspect
-      
+        
       view = options[:controller_class].send(options[:action])
       view.should be_an_instance_of(Jooxe::View)
-      
-      #puts "view == " + view.inspect
-      
+       
       view.instance.should be_an_instance_of(User)
       view.instance.id.should eq(2)
       view.instance.mail.should eq('johnboy@thewaltons.com')
     end
     
     it "should update an instance when calling update with put verb" do
-      #@env["PATH_INFO"] = "/users/2"
-      setup_URI("http://localhost:9292/users/2/update?user[mail]=sue.ellen@thewaltons.com","PUT")
+
+      setup_URI("http://localhost:9292/users/2/?user[mail]=sue.ellen@thewaltons.com","PUT")
       options = @router.route(@env)
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('users')

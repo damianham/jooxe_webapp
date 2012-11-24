@@ -6,6 +6,9 @@ Dir.glob('lib/jooxe/core/*.rb') do |f|
   require f
 end
 
+Dir.glob('lib/jooxe/helpers/*.rb') do |f|
+  require f
+end
 
 Dir.glob('lib/jooxe/*.rb') do |f|
   require f

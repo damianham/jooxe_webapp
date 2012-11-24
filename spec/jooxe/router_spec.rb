@@ -24,6 +24,7 @@ module Jooxe
     it "should route to a controller index" do
       @env["PATH_INFO"] = "/user"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/')
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('user')
       options[:controller_class].should be_an_instance_of(UsersController)
@@ -33,53 +34,58 @@ module Jooxe
     it "should route to a controller action to view an instance" do
       @env["PATH_INFO"] = "/user/123"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/')
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('user')
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('show')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to a controller action" do
       @env["PATH_INFO"] = "/user/123/edit"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/')
       options[:model_class_name].should eq('User')
       options[:table_name].should eq('user')
       options[:controller_class].should be_an_instance_of(UsersController)
       options[:action].should eq('edit')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to a nested controller index" do
       @env["PATH_INFO"] = "/user/123/post"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/user/123')
       options[:model_class_name].should eq('Post')
       options[:table_name].should eq('post')
       options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('index')
-      options[:user_id].should eq('123')
+      options[:params][:user_id].should eq('123')
     end
     
     it "should route to a nested controller action to view an instance" do
       @env["PATH_INFO"] = "/user/123/post/456"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/user/123')
       options[:model_class_name].should eq('Post')
       options[:table_name].should eq('post')
       options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('show')
-      options[:user_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:user_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
     it "should route to a nested controller action" do
       @env["PATH_INFO"] = "/user/123/post/456/edit"
       options = @router.route(@env)
+      options[:context_prefix].should eq ('/user/123')
       options[:model_class_name].should eq('Post')
       options[:table_name].should eq('post')
       options[:controller_class].should be_an_instance_of(PostsController)
       options[:action].should eq('edit')
-      options[:user_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:user_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
    

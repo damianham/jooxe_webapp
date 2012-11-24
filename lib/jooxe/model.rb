@@ -16,6 +16,15 @@ module Jooxe
       table_name = subclass.name.demodulize.tableize
     end
     
+    def to_param
+      if self.id.nil?
+        nil
+      else
+        self.id.to_s
+      end
+      
+    end
+    
     private
     
     private
@@ -69,7 +78,7 @@ module Jooxe
     
     def define_getter(attr_name)
       self.class.send :define_method, attr_name do
-        @values[attr_name]
+        @values[attr_name] || @values[attr_name.to_s]
       end
     end
     
@@ -88,8 +97,8 @@ module Jooxe
       
       # if the method is a known attribute name then return the value
       if @values.has_key?(meth.to_s) || is_a_known_attribute?(meth.to_s)
-        define_getter(meth.to_s)
-        return @values[meth.to_s]
+        define_getter(meth)
+        return @values[meth] || @values[meth.to_s]
       end
       
       # the method name is not a known attribute 

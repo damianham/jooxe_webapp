@@ -4,9 +4,12 @@ require 'tilt'
 module Jooxe
   class View
     
+    # include the path helper
+    include Jooxe::Path
+    
     attr_accessor :context
     
-    def initialize(env,binding_context,options = {})
+    def initialize(env,binding_context = nil,options = {})
       @env = env
       @context = binding_context  # the controller that performed the action
       @options = options
@@ -41,6 +44,10 @@ module Jooxe
         # uhmmm render with a layout
         render_template_with_layout(layout,template_file,options)
       end
+    end
+    
+    def redirect_to
+      @options[:redirect_to]
     end
     
     def collection

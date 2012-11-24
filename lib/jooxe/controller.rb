@@ -5,25 +5,30 @@ module Jooxe
   
   class Controller
     
+    # include the path helper
+    include Jooxe::Path
+    
     attr_writer :env
   
     def index
       
       @collection = get_collection
       
+      #puts "index collection == " + @collection.inspect
+      
       render  :collection => @collection
     end
     
     def show
      
-      @instance = get_instance(route_info[:id])
+      @instance = get_instance(params[:id])
       #puts "instance == " + @instance.inspect
       render  :instance => @instance
     end
     
     def edit
        
-      @instance = get_instance(route_info[:id])
+      @instance = get_instance(params[:id])
       
       render  :instance => @instance
     end
@@ -35,16 +40,22 @@ module Jooxe
     end
     
     def create
-      puts "params == " + params["user"].inspect
+      #puts "create params == " + params["user"].inspect
       # insert the new instance
-      get_dataset.insert(params["user"])
+      id = get_dataset.insert(params[class_name])
+      @instance = get_instance(id)
+      #puts "create instance == " + @instance.inspect
       redirect_to :index
     end
     
     def update
-      @instance = get_instance(route_info[:id])
       
-      @instance.update(params)
+      @instance = get_instance(params[:id])
+      
+#      puts "update instance == " + @instance.inspect
+#      puts "with " + params[class_name].inspect
+      
+      @instance.update(params[class_name])
       render  :instance => @instance
     end
     
@@ -52,16 +63,22 @@ module Jooxe
       dataset = get_dataset
       
       dataset.where(:id => params[:id]).delete
+      
+      redirect_to :index
     end
     
     private
     
     def params
-      @env[:request].params
+      @env[:request].params.merge(route_info[:params])
     end
     
     def route_info
       @env[:route_info]
+    end
+    
+    def class_name
+      route_info[:model_class].class.name.demodulize.tableize.singularize
     end
     
     def render(options = {})
@@ -84,50 +101,71 @@ module Jooxe
      
     end
     
-    def get_dataset
+    def redirect_to(path_or_sym_or_hash)
       
-      model_class = route_info[:model_class]
-      dataset = nil
-      
-      if model_class.respond_to?(:all)
-        dataset = model_class.all
-      elsif model_class.respond_to?(:dataset)
-        dataset = model_class.dataset
-      else
-        table_name = model_class.table_name || route_info[:table_name]
-        
-        dataset = DB[table_name.to_sym]
+      # actions are given by symbols
+      options = {}
+      path = path_or_sym_or_hash
+      if path_or_sym_or_hash.is_a?(Symbol)
+        # convert to a path for the action
+        path = path_for_action(@instance || route_info[:model_class], path_or_sym_or_hash)
+      elsif path_or_sym_or_hash.is_a?(Hash)
+        path = path_or_sym_or_hash[:path]
+        options = path_or_sym_or_hash
       end
       
+      # ensure the options contain the class data
+      if ! @collection.nil? && ! options.has_key?(:collection)
+        options[:collection] = @collection
+      end
+ 
+      if ! @instance.nil? && ! options.has_key?(:instance)
+        options[:instance] = @instance
+      end
+      
+      view = Jooxe::View.new(@env,self,options.merge({:redirect_to => path.to_s}))
+    end
+    
+    def get_dataset(options = nil)
+      
+      #model_class = 
+      
+      if options.nil? || ! options.is_a?(Hash)
+        dataset = route_info[:model_class].class.dataset
+      else
+        dataset = route_info[:model_class].class.dataset.where(options)
+      end
+      
+      yield dataset  if block_given?
+
+      
+      #      if model_class.respond_to?(:all)
+      #        dataset = model_class.all
+      #      elsif model_class.respond_to?(:dataset)
+      #        dataset = model_class.dataset
+      #      else
+      #        table_name = model_class.table_name || route_info[:table_name]
+      #        
+      #        dataset = DB[table_name.to_sym]
+      #      end
+      
+      dataset
+      
+    end
+    
+    def get_collection(where = nil)
+      dataset = get_dataset(where)
+      
+      if block_given?
+        dataset = yield dataset
+      end
+        
       dataset
     end
     
-    def get_collection(where = {})
-      dataset = get_dataset
-      
-      
+    def get_instance(id) 
+      route_info[:model_class].class[id]
     end
     
-    def get_instance(id)
-      
-      # get the dataset for the model class
-      dataset = get_dataset
-  
-      # select the data record with the given ID
-      model_data = dataset[:id => id]
-      
-      model_class = route_info[:model_class].class.new()
-      
-      if model_data.nil?
-        # not found so return nil
-        return nil
-      end
-      
-      # create a new instance of the model class with the data result
-      model_class.set_values(model_data)
-      
-      return model_class
-      
-    end
   end
 end

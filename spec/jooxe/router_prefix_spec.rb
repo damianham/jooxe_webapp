@@ -37,7 +37,7 @@ module Jooxe
       options[:table_name].should eq('site')
       options[:controller_class].should be_an_instance_of(SitesController)
       options[:action].should eq('show')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to a controller action" do
@@ -47,7 +47,7 @@ module Jooxe
       options[:table_name].should eq('site')
       options[:controller_class].should be_an_instance_of(SitesController)
       options[:action].should eq('edit')
-      options[:id].should eq('123')
+      options[:params][:id].should eq('123')
     end
     
     it "should route to a nested controller index" do
@@ -57,7 +57,7 @@ module Jooxe
       options[:table_name].should eq('prefix_user')
       options[:controller_class].should be_an_instance_of(PrefixUsersController)
       options[:action].should eq('index')
-      options[:site_id].should eq('123')
+      options[:params][:site_id].should eq('123')
     end
     
     it "should route to a nested controller action to view an instance" do
@@ -67,8 +67,8 @@ module Jooxe
       options[:table_name].should eq('prefix_user')
       options[:controller_class].should be_an_instance_of(PrefixUsersController)
       options[:action].should eq('show')
-      options[:site_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:site_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
     it "should route to a nested controller action" do
@@ -78,8 +78,8 @@ module Jooxe
       options[:table_name].should eq('prefix_user')
       options[:controller_class].should be_an_instance_of(PrefixUsersController)
       options[:action].should eq('edit')
-      options[:site_id].should eq('123')
-      options[:id].should eq('456')
+      options[:params][:site_id].should eq('123')
+      options[:params][:id].should eq('456')
     end
     
     

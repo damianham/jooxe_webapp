@@ -53,7 +53,7 @@ module Jooxe
       $dbs.each do |database_name,tables|  
         tables.each_key do |key|  
           DynamicClassCreator.define_controller(key)   
-          DynamicClassCreator.define_model(key) 
+          DynamicClassCreator.define_model(key,key) 
         end
          
       end
@@ -71,11 +71,11 @@ module Jooxe
       Jooxe.module_eval "class #{class_name} < Jooxe::Controller; end" 
     end
     
-    def DynamicClassCreator.define_model(name)
+    def DynamicClassCreator.define_model(name,table_name)
       class_name = name.to_model_name
        
       #puts "DynamicClassCreator define model class #{class_name} < Jooxe::Model; end"
-      Jooxe::module_eval "class #{class_name} < Jooxe::Model; end" 
+      Jooxe::module_eval "class #{class_name} < Jooxe::Model; end; #{class_name}.set_dataset :#{table_name}" 
       
     end
     
@@ -89,11 +89,11 @@ module Jooxe
  
     end
     
-    def DynamicClassCreator.create_model(env,name)
+    def DynamicClassCreator.create_model(env,name,table_name)
       
       #new_class = nil
       
-      self.define_model(name)
+      self.define_model(name,table_name)
       
       #puts "create new model with "+ "new_class = #{name.to_model_name}.new"
       Jooxe::module_eval "new_class = #{name.to_model_name}.new"

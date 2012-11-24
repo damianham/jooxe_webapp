@@ -26,6 +26,8 @@ module Jooxe
         path_elements.shift
       end
     
+      context = path_elements.dup
+      
       @database_name = consume_context(path_elements)
       
       return {:root => true, :database_name => @database_name} if path_elements.length == 0
@@ -33,13 +35,15 @@ module Jooxe
       # use the default database if no prefix given
       @database = $dbs[@database_name] || $dbs['default'] || {}
     
-      @route_info = Hash.new(:database => @database, :database_name => @database_name)
+      @route_info = Hash.new(:database => @database, :database_name => @database_name, :params => {})
       
       while path_elements.length > 0
         
         # the next component should be a valid class name
         class_name = consume_class(path_elements)
 
+        # get the current context which is al path elements up to the current class name
+        @route_info[:context_prefix] = "/" + context[0,context.length - path_elements.length - 1].join('/')
         @route_info[:model_class_name] = class_name.to_model_name unless class_name.nil?
         @route_info[:controller_class] = @controller_class
         @route_info[:model_class] = @model_class
@@ -73,10 +77,19 @@ module Jooxe
 
         end
       
-        @route_info.update({ :id => id, :action => action })
-      
-        @route_info[(class_name.to_s.singularize+'_id').to_sym] = id unless @route_info[:model_class_name].nil? or id.nil?
-      
+        @route_info.update({ :action => action })
+        
+        if ! id.nil?
+          param_name = class_name.to_s.singularize+'_id'
+           
+          @route_info[:params].update({ :id => id, param_name.to_sym => id })
+               
+        else
+          @route_info[:params].delete(:id)
+        end
+        
+        
+        
       end
       
       @route_info
@@ -97,7 +110,7 @@ module Jooxe
       
       possible_table_names = [paths[0], paths[0].singularize, paths[0].pluralize]
       
-      @table_name = possible_table_names.dup.keep_if { |name| @database.has_key?(name)}[0]
+      @table_name = possible_table_names.dup.reject { |name| ! @database.has_key?(name)}[0]
       
       if @table_name.nil?     
         raise NameError.new("Class not found #{class_name}")
@@ -121,7 +134,7 @@ module Jooxe
         @model_class.env = @env.merge(:route_info => @route_info)
       rescue NameError => boom
         # loading the class failed so create the model class dynamically
-        @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0])
+        @model_class = Jooxe::DynamicClassCreator.create_model(@env.merge(:route_info => @route_info),paths[0],@table_name)
       end
       
       return paths.shift
