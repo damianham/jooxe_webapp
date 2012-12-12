@@ -1,4 +1,9 @@
+require 'rubygems'
 
+# Set up gems listed in the Gemfile.
+ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
+
+require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
 # connect to the mysql database with the sequel adapter assigning the DB constant
 
@@ -21,3 +26,4 @@ jdbc:firebirdsql:localhost/3050:/path/to/database.fdb
 jdbc:jdbcprogress:T:hostname:port:database
 jdbc:cubrid:hostname:port:database:::
 =end
+
