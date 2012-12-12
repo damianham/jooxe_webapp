@@ -2,10 +2,7 @@
 require 'rack'
 require 'rack/contrib'
 
-require 'environment'
-
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.dirname(__FILE__) + "/lib")
+require ::File.expand_path('../config/environment',  __FILE__)
 
 require 'jooxe'
 

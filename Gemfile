@@ -1,5 +1,7 @@
 source 'http://rubygems.org'
 
+gem 'rack'
+gem 'rack-contrib'
 gem 'sequel'
 gem 'tilt'
 gem 'json_pure'
