@@ -7,10 +7,6 @@ module Jooxe
     
     attr_writer :env
     attr_accessor :table_name
-    
-    def params
-      @env[:request].params
-    end
 
     def self.inherited(subclass)
       table_name = subclass.name.demodulize.tableize
@@ -24,8 +20,6 @@ module Jooxe
       end
       
     end
-    
-    private
     
     private
     

@@ -9,7 +9,6 @@ module Jooxe
       # '/' means no context so set it to the empty string
       context = '' if context == '/'
       
-      
       if action.nil?
         if object_or_class.is_a?(Class)
           # generate a path to the index for the class
