@@ -12,17 +12,27 @@ gem 'capistrano'
 platform :ruby_19 do
   gem 'mysql2'
   #gem 'sqlite3'
+  group :development, :test do
+    gem "better_errors"
+    gem "binding_of_caller"
+  end
 end
 
 platform :jruby do
   gem 'jdbc-mysql'
-  #gem 'jdbc-sqlite3'
+
+  group :development, :test do
+    gem 'jdbc-sqlite3'
+    gem 'ruby-debug-ide'
+  end
 end
 
 group :development, :test do
-  gem 'ruby-debug-ide'
+  
   gem 'rspec'
   gem 'capybara'
+  gem 'cucumber'
   gem 'watchr'
   gem 'spork'
+  gem 'yard'
 end
