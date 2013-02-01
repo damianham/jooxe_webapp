@@ -13,7 +13,7 @@ use Jooxe::Static, :urls => [""], :root => "public", :header_rules => [
              [:all, {'Cache-Control' => 'public, max-age=31536000'}],
   
              # Provide web fonts with cross-origin access-control-headers
-             #  Firefox requires this when serving assets using a Content Delivery Network
+             #  Firefox requires this when serving assets using a Content Deliv
              [:fonts, {'Access-Control-Allow-Origin' => '*'}]
            ]
 
@@ -36,8 +36,11 @@ use Rack::ConditionalGet
 # Automatically sets the ETag header on all String bodies.
 use Rack::ETag
 
+#ruby1.9 platform only
+#use BetterErrors::Middleware
+#BetterErrors.application_root = File.expand_path("..", __FILE__)
 
-run JooxeApplication.new
+run Jooxe::JooxeApplication.new
 
 
 

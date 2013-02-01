@@ -1,0 +1,21 @@
+<div style="font: 8pt Arial, Helvetica, sans-serif; color: #555; text-align: right; margin-right: 4px; margin-top: 30px;">
+        User [%= session.user %] logged in as [%= titleize(session.authorization_data.role) %]<br/>
+        Last action: [%= date.format(time   = date.now, 
+        format = '%Y-%m-%d %H:%M:%S', 
+        gmt => 1) %] UTC±00:00<br/>
+      </div>
+
+<div id="flash_container">
+          <%- IF flash.error %>
+          <div class="error"><% flash_link(flash.error, "onClick='javascript:toggle_flash_detail()'") %>
+            <div id="flash_detail" style="display: none;"><% flash.error %></div>
+          </div>
+          <%- END %>
+          <%- IF flash.message %>
+          <div class="message" id="flash"><% flash.message %></div>
+          <%- ELSIF flash.notice %>
+          <div class="notice" id="flash"><% flash.notice %></div>
+          <%- ELSIF flash.info %>
+          <div class="message"><% flash.info %></div>
+          <%- END %>
+        </div>

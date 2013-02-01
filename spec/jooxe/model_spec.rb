@@ -13,5 +13,11 @@ module Jooxe
       @env = Hash.new
     end
     
+    it "should return the ID for to_param" do
+      model = Jooxe::User.new(:id => 17)
+      model.to_param.should eq("17")
+    end
+    
+    
   end
 end

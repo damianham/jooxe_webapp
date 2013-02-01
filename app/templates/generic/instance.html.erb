@@ -1,11 +1,15 @@
 <!-  render an instance in a table -->
+<%#
+# generic instance in a table
+%>
 
+<%= "instance.html generic template" %>
 <table cellpadding="5" cellspacing="5">
-
-<% route_info[:column_info].each do |field| %>
+  
+<% @instance.columns.each do |field| %>
   <tr>
-    <th><%= field.titleize %></th>
-    <td><%= @instance[field.to_sym] %></td>
+    <th><%= field[0].to_s.titleize %></th>
+    <td><%= @instance.send(field[0]) %></td>
   </tr>
   
 <%   end %>

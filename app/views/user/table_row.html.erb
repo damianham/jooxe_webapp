@@ -1,0 +1,7 @@
+
+ <tr>
+      <% @keys.each do |key| %>
+    <th><%= instance.send(key.to_sym)  %></th>
+      <% end %>
+    </tr>
+    

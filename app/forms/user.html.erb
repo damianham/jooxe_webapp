@@ -1,0 +1,5 @@
+<table>
+<% @instance.keys.each do |key| %>
+<tr><th><%= key.titleize %></th><td><input type="text" name="<%=key%>" /></td></tr>
+<% end %>
+</table>

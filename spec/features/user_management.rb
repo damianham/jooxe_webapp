@@ -1,5 +1,9 @@
 require 'spec_helper'
+require 'capybara/rspec'
 
+# capybara with rspec
+
+# describe "user management", :type => :feature do
 feature "user management" do
   scenario "creating a new widget" do
     visit root_url

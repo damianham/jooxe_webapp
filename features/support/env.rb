@@ -27,19 +27,22 @@ DB.create_table :users do
   String :updated_by
 end
 
-# create a dataset from the items table
-users = DB[:users]
+## create a dataset from the items table
+#users = DB[:users]
 
 # load the fixture with yaml
-db = YAML::load( File.open( 'test/db/fixtures/users.yml' ) )
-
-# populate the table
-db.values.each do |v| 
-  users.insert(v)
-end
-
+#db = YAML::load( File.open( 'test/db/fixtures/users.yml' ) )
+#
+## populate the table
+#db.values.each do |v| 
+#  users.insert(v)
+#end
 
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../.."))
 $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../..") + "/lib")
 
 require 'jooxe'
+
+# load the database info
+$dbs = nil
+Jooxe::Loader.load_databases 'test/db/default_column_info.yml'

@@ -1,0 +1,30 @@
+<%#
+# template to render a user collection
+%>
+
+<% 
+content_for :page_title do
+  "List Users"
+end
+%>
+
+
+<% instance = @collection[0] 
+@keys = instance.fields_for_context(:table)
+@keys = instance.columns.map {|field| field[0]} if @keys.nil?  # default to columns
+
+%>
+
+<table cellpadding="5" cellspacing="5">
+  <tr>
+      <% @keys.each do |key| %>
+    <th><%= key.to_s.titleize  %></th>
+      <% end %>
+    </tr>
+  <% @collection.each do |instance| %>
+    
+      <%= render :partial => 'table_row', :locals => {:instance => instance} %>
+    
+  <% end %>
+
+</table>

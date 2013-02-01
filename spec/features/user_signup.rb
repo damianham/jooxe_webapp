@@ -1,9 +1,19 @@
 require 'spec_helper'
+require 'capybara' 
+require 'capybara/dsl'
+require 'capybara/rspec'
+require 'capybara/cucumber'
+
+Capybara.app = JooxeApplication.new
+Capybara.run_server = false
+World(Capybara) 
+
+# capybara with rspec
 
 
 feature "Signing up" do
   background do
-    User.make(:email => 'user@example.com', :password => 'caplin')
+    Jooxe::User.create(:mail => 'user@example.com', :password => 'caplin')
   end
 
   scenario "Signing in with correct credentials" do
@@ -14,7 +24,7 @@ feature "Signing up" do
     click_link 'Sign in'
   end
 
-  given(:other_user) { User.make(:email => 'other@example.com', :password => 'rous') }
+  given(:other_user) { Jooxe::User.create(:mail => 'other@example.com', :password => 'rous') }
 
   scenario "Signing in as another user" do
     within("#session") do

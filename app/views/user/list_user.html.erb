@@ -1,0 +1,43 @@
+<%#
+# template to render a list of users
+%>
+
+<table cellpadding="5" cellspacing="5">
+
+  <tr>
+    <th>
+      Account Name
+    </th>
+    <td>
+      <%= instance.account_name %>
+    </td>
+  </tr>
+  <tr>
+    <th>
+       Name
+    </th>
+    <td>
+      <%= instance.given_name %> <%= instance.sn %>
+    </td>
+  </tr>
+  <tr>
+    <th>
+       SIP URI
+    </th>
+    <td>
+      <%= instance.sip_uri %> 
+    </td>
+  </tr>
+ 
+  <tr>
+    <th>
+      Mail
+    </th>
+    <td>
+      <%= instance.mail %>
+    </td>
+  </tr>
+    
+  
+    
+</table>

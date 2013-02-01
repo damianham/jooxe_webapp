@@ -3,12 +3,13 @@ require File.expand_path('../boot', __FILE__)
 # connect to the mysql database with the sequel adapter assigning the DB constant
 
 require 'sequel'
-DB = Sequel.connect('jdbc:mysql://localhost/helios?user=test&password=test')
+DB = Sequel.connect('mysql2://localhost/test?user=test&password=test')
 
 =begin
-example connection strings
+example Java connection strings
 jdbc:sqlite::memory:
 jdbc:postgresql://localhost/database?user=username
+'jdbc:mysql://localhost/helios?user=test&password=test'
 jdbc:mysql://localhost/test?user=root&password=root
 jdbc:h2:mem:
 jdbc:hsqldb:mem:mymemdb
@@ -21,3 +22,5 @@ jdbc:firebirdsql:localhost/3050:/path/to/database.fdb
 jdbc:jdbcprogress:T:hostname:port:database
 jdbc:cubrid:hostname:port:database:::
 =end
+
+require 'jooxe'

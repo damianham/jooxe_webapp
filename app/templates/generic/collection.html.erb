@@ -1,0 +1,29 @@
+<!-  render a collection in a table -->
+<%#
+# generic collection in a table
+%>
+
+<%= "collection.html generic template" %>
+<% instance = @collection[0] 
+  keys = instance.columns.map {|field| field[0]}
+
+%>
+
+<table>
+  <tr>
+    <% keys.each do |key| %>
+
+      <th><%= key.to_s.titleize %></th>
+
+    <%   end %>
+  </tr>
+  
+  <% @collection.each do |instance| %>
+  <tr>
+    <% keys.each do |key|%>
+    <th><%= instance.send(key) %></th>
+    <% end %>
+  </tr>
+  <% end %>
+  
+</table>
