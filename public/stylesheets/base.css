@@ -1,0 +1,47 @@
+html, body, div, span, object, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, em, font, img, strong, sub, sup, li, ul, form, label, legend {
+/* , table, tr, th, td */
+
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	text-align: left;
+	vertical-align: baseline;
+}
+
+a img, :visited img {
+	border: 0;
+}
+
+/*
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+*/
+ul {
+	list-style: none;
+}
+
+sup {
+	position: relative;
+	top: -0.6em;
+	font-size: 0.5em;
+}
+
+
+.float_left {
+	float: left;
+	margin-right: 20px;
+}
+
+.float_right {
+	float: right;
+	margin-left: 20px;
+}
+
+.hidden {
+	display:none;
+}

@@ -1,5 +1,11 @@
+<% 
+@keys = @instance.fields_for_context(:form)
+@keys = @instance.columns.map {|field| field[0]} if @keys.nil?  # default to columns
+
+%>
+
 <table>
-<% @instance.keys.each do |key| %>
+<% @keys.each do |key| %>
 <tr><th><%= key.titleize %></th><td><input type="text" name="<%=key%>" /></td></tr>
 <% end %>
 </table>
