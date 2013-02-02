@@ -1,10 +1,9 @@
 source 'http://rubygems.org'
 
+gem 'jooxe', :path => '../jooxe'
+
 gem 'rack'
 gem 'rack-contrib'
-gem 'sequel'
-gem 'tilt'
-gem 'json_pure'
 
 # Deploy with Capistrano
 gem 'capistrano'
