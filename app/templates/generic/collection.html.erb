@@ -1,16 +1,19 @@
-<!-  render a collection in a table app/view/templates/generic/collection.html.erb -->
+<!--  render a collection in a table app/view/templates/generic/collection.html.erb -->
 <%#
 # generic collection in a table
 %>
 
 <% instance = @collection[0] 
-  keys = instance.columns.map {|field| field[0]}
-
+@keys = instance.fields_for_context(:table) rescue []
+@keys = instance.columns.map {|field| field[0]} if @keys.nil?  # default to columns
 %>
 
 <table>
+  <% if @collection.size == 0 %>
+  <tr><th>No objects found</th></tr>
+  <% end %>
   <tr>
-    <% keys.each do |key| %>
+    <% @keys.each do |key| %>
 
       <th><%= key.to_s.titleize %></th>
 
@@ -19,7 +22,7 @@
   
   <% @collection.each do |instance| %>
   <tr>
-    <% keys.each do |key|%>
+    <% @keys.each do |key|%>
     <th><%= instance.send(key) %></th>
     <% end %>
   </tr>

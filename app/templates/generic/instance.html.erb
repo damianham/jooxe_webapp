@@ -2,14 +2,17 @@
 <%#
 # generic instance in a table
 %>
-
+<% 
+@keys = @instance.fields_for_context(:view) 
+@keys = @instance.columns.map {|field| field[0]} if @keys.nil?  # default to columns
+%>
 
 <table cellpadding="5" cellspacing="5">
   
-<% @instance.columns.each do |field| %>
+<% @keys.each do |key| %>
   <tr>
-    <th><%= field[0].to_s.titleize %></th>
-    <td><%= @instance.send(field[0]) %></td>
+    <th><%= key.to_s.titleize %></th>
+    <td><%= @instance.send(key) %></td>
   </tr>
   
 <%   end %>
