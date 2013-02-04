@@ -9,7 +9,7 @@ desc "Build the schema"
 # to specify default values,
 # we take advantage of args being a Rake::TaskArguments object
 task :build_schema, :database, :username, :password do |t, args|
-  args.with_defaults( :username => "test", :password => "test",  :format => :yaml)
+  args.with_defaults( :username => "test",   :format => :yaml)
   puts "Args with defaults were: #{args}"
 
   rel_columns = "column_name,referenced_table_schema,referenced_table_name,referenced_column_name"
@@ -17,22 +17,31 @@ task :build_schema, :database, :username, :password do |t, args|
   result = {'schema' => {}}
 
   # create the schema object then export to a yaml file
+  options = {:host => "localhost", :username => args['username'],
+     :database => 'information_schema'}
+   
+  if args['password']
+    options[:password] = args['password']
+  end
 
-  client = Mysql2::Client.new(:host => "localhost", :username => args['username'],
-  :password => args['password'], :database => 'information_schema')
+  client = Mysql2::Client.new(options)
 
   tables = client.query("SELECT TABLE_NAME,TABLE_COMMENT FROM TABLES WHERE TABLE_SCHEMA = '#{args['database']}'" )
 
+  if tables.size == 0
+    puts "Table count is 0, either there are no tables in #{args['database']} or database user #{args['username']} does not have permission to read the information_schema database"
+  end
+  
   count = 0
   tables.each do |row|
     next if row['TABLE_NAME'] == 'schema_migrations' || row['TABLE_NAME'] == 'play_evolutions'
  
-	comment = row['TABLE_COMMENT'] || ""
+    comment = row['TABLE_COMMENT'] || ""
 	
     puts row['TABLE_NAME'] + " " + comment
 
-	comment = comment.gsub(/\r/," ") 
-	comment = comment.gsub(/\n/," ") 
+    comment = comment.gsub(/\r/," ") 
+    comment = comment.gsub(/\n/," ") 
 
     result['schema'][row['TABLE_NAME']] = {'columns' => {}, 'has_many' => Array.new, 'belongs_to' => Array.new, 'comment' => comment}
 
@@ -53,7 +62,7 @@ task :build_schema, :database, :username, :password do |t, args|
       # ignore primary key columns that dont reference anything
       next if rel['referenced_column_name'] == nil
       
-       # add the has_many to the parent and the belongs_to to the child
+      # add the has_many to the parent and the belongs_to to the child
       #puts "add has_many #{row['TABLE_NAME']} to #{rel['referenced_table_name']} " + rel.inspect
      
       result['schema'][rel['referenced_table_name']]['has_many'] << [row['TABLE_NAME']] 
@@ -69,11 +78,11 @@ task :build_schema, :database, :username, :password do |t, args|
 
   filename = args['database']
   case args['format']
-    when :yaml
-      filename = filename + '_column_info.yml'
-    when :json
-      filename = filename + '_column_info.json'
-    end
+  when :yaml
+    filename = filename + '_column_info.yml'
+  when :json
+    filename = filename + '_column_info.json'
+  end
     
   # generate the output
   File.open(filename,"w") do |f|
