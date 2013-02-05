@@ -20,9 +20,13 @@ edit config/application.rb and setup the Sequel database connection parameters
 
 rake build_schema[your_database_name,your_database_user,database_user_password]
 
-replacing your_database_name with th ename of the database to generate the schema for and 
+replacing your_database_name with the name of the database to generate the schema for and 
 your_database_user,database_user_password with values that
 have privileges to read the information_schema database.
+
+# Move the database schema file to the default schema file
+mv ${your_database_name}_column_info.yml db/default_column_info.yml
+
 
 # Running the example application
 
