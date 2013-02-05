@@ -12,7 +12,7 @@
 <% @keys.each do |key| %>
   <tr>
     <th><%= key.to_s.titleize %></th>
-    <td><%= @instance.send(key) %></td>
+    <td><%= h @instance.send(key) %></td>
   </tr>
   
 <%   end %>
